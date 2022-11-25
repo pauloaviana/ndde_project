@@ -1,3 +1,5 @@
-import pandas as pd
+import tsplib95 as tsplib
 
-print("Hello World\nThis is a test")
+test = tsplib.load('libs/tsp/eil51.tsp')
+
+print(type(test))
