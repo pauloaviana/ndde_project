@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.stats import rankdata
 from population import Individual
 from graph import Graph
 from mappers import rank_order_value, backward_mapping
@@ -33,6 +32,23 @@ class NovelDiscreteDE:
             individual = self.population[i]
             individual.real_gene = population_new_real_genes[i]
 
+    def evoluationary_proccess(self):
+        pass
+
+    def ensemble_mutation(self):
+        pass
+
+    def expotencial_crossover(self):
+        pass
+
+    def fitness_reevaluation(self):
+        pass
+
+    def pairwise_selection(self):
+        pass
+
+    def calculate_success_rate(self):
+        pass
 
 
 
