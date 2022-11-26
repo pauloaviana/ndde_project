@@ -1,0 +1,9 @@
+*.pyc
+k8s/
+*.idea
+*.swp
+*.pyc
+.scannerwork/
+*/htmlcov
+.coverage
+sourceCode/coverage.xml
