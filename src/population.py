@@ -8,8 +8,8 @@ class Individual:
         self.id = uuid4()
         self.discrete_gene = discrete_gene
         self.real_gene = real_gene
-        self.mutant_gene = array()
-        self.trial_gene = array()
+        self.mutant_gene = array([])
+        self.trial_gene = array([])
         self.fitness = fitness_value
         self.age = 0
         self.last_mutation_method = ""
