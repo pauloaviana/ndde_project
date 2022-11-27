@@ -2,11 +2,11 @@ import numpy as np
 from scipy.stats import rankdata
 
 
-def rank_order_value(tour: np.array):
+def rank_order_value(tour: np.array) -> np.array:
     return rankdata(tour, method='min')
 
 
-def backward_mapping(discrete_tour: np.array):
+def backward_mapping(discrete_tour: np.array) -> np.array:
     real_tour = np.zeros(len(discrete_tour))
 
     random_tour = np.zeros(len(discrete_tour))

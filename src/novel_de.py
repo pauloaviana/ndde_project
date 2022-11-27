@@ -2,14 +2,34 @@ import numpy as np
 from population import Individual
 from graph import Graph
 from mappers import rank_order_value, backward_mapping
+from mutation import *
 
+
+MUTATION_FUNCTIONS = {
+        {"rand/one": de_rand_one, "best/two": de_best_two, "tr_mut": de_trigonometric_mutation}
+    }
 
 class NovelDiscreteDE:
 
-    def __init__(self, graph: Graph, population_size: int = 100):
+    def __init__(self, graph: Graph,
+                 max_fit: int = 10000,
+                 population_size: int = 100,
+                 mutation_parameter: int = 0.1,
+                 crossover_probability: int = 0.1,
+                 mutation_cycle=3):
+
         self.graph = graph
-        self.problem_size = len(self.graph.nodes)
+        self.problem_dimension = len(self.graph.nodes)
         self.population_size = population_size
+        self.max_fit = max_fit
+        self.fitness_call = 0
+        self.generation = 0
+        self.mutation_parameter = mutation_parameter
+        self.mutation_cycle = mutation_cycle
+        self.current_mutation_method = None
+
+        self.mutation_status = {"rand/one": (0, 0), "best/two": (0, 0), "tr_mut": (0, 0)}
+        self.crossover_probability = crossover_probability
         self.population = []
 
         self.start_population()
@@ -17,12 +37,13 @@ class NovelDiscreteDE:
         self.remap_population()
 
     def start_population(self):
-        real_random_tour = np.random.randn(self.population_size, self.problem_size)
+        real_random_tour = np.random.randn(self.population_size, self.problem_dimension)
         for tour in real_random_tour:
             discrete_tour = rank_order_value(tour)
             individual_fitness = self.graph.get_tour_distance(discrete_tour)
             individual = Individual(discrete_gene=discrete_tour, real_gene=tour, fitness_value=individual_fitness)
             self.population.append(individual)
+            self.fitness_call += 1
         return self.population
 
     def remap_population(self):
@@ -32,23 +53,72 @@ class NovelDiscreteDE:
             individual = self.population[i]
             individual.real_gene = population_new_real_genes[i]
 
-    def evoluationary_proccess(self):
-        pass
+    def evolutionary_process(self):
+        for i in range(20):
+            self.ensemble_mutation()
+            self.exponential_crossover()
+            self.pairwise_selection()
+            self.calculate_success_rate()
+            self.generation += 1
 
     def ensemble_mutation(self):
-        pass
 
-    def expotencial_crossover(self):
-        pass
+        if self.generation % self.mutation_cycle == 0:
 
-    def fitness_reevaluation(self):
-        pass
+            size_pop = np.round(self.population / 3)
+
+            rng = np.random.default_rng()
+            pop_one_indexes = rng.choice(self.population_size, size=size_pop, replace=False)
+            pop_two_indexes = rng.choice(self.population_size, size=size_pop, replace=False)
+            pop_three_indexes = rng.choice(self.population_size, size=self.population_size-size_pop, replace=False)
+
+            population_one = [self.population[i] for i in pop_one_indexes]
+            population_two = [self.population[i] for i in pop_two_indexes]
+            population_three = [self.population[i] for i in pop_three_indexes]
+
+            self.mutation_status = {"rand/one": (len(population_one), 0),
+                                     "best/two": (len(population_two), 0),
+                                     "tr_mut": (len(population_three), 0)}
+
+            de_rand_one(population_one)
+            de_best_two(population_two)
+            de_trigonometric_mutation(population_three)
+
+            map(lambda ind: ind.set_mutation_method("rand/one"), population_one)
+            map(lambda ind: ind.set_mutation_method("best/two"), population_two)
+            map(lambda ind: ind.set_mutation_method("tr_mut"), population_three)
+
+        else:
+            self.current_mutation_method(self.population)
+
+    def exponential_crossover(self):
+        ##TODO develop the correct code for crossover
+        for individual in self.population:
+            individual.trial_gene = individual.mutant_gene
 
     def pairwise_selection(self):
-        pass
+        for individual in self.population:
+            discrete_trial_gene = rank_order_value(individual.trial_gene)
+            trial_fitness = self.graph.get_tour_distance(discrete_trial_gene)
+            self.fitness_call += 1
+            if trial_fitness < individual.fitness:
+                individual.real_gene = individual.trial_gene
+                individual.discrete_gene = discrete_trial_gene
+                individual.fitness = trial_fitness
+                if self.generation % self.mutation_cycle == 0:
+                    self.mutation_status[individual.last_mutation_method][1] += 1
+
+            #cleaning mutant and trial vectors for next generation
+            individual.mutant_gene = np.array()
+            individual.trial_gene = np.array()
+            individual.last_mutation_method = ""
 
     def calculate_success_rate(self):
-        pass
-
-
+        best_func = ""
+        best_rate = 0
+        for key, value in self.mutation_status:
+            success_rate = value[1] / value[0]
+            if success_rate > best_rate:
+                best_rate = success_rate
+                self.current_mutation_method = MUTATION_FUNCTIONS[key]
 

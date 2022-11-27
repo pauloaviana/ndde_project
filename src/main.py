@@ -8,10 +8,11 @@ if __name__ == '__main__':
     start = time()
     problem = tsplib95.load('../libs/tsp/berlin52.tsp')
 
-    population_size = 100
+    population_size = 10
     graph = Graph(problem)
 
     ndde = NovelDiscreteDE(graph, population_size=population_size)
+    ndde.evolutionary_process()
     #for individual in ndde.population:
     #    print(individual.to_string())
 
