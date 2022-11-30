@@ -46,7 +46,7 @@ class NovelDiscreteDE:
             self.fitness_call += 1
         return self.population
 
-    def remap_population(self):
+    def remap_population(self): # Discrete -> Real mapping
         population_discrete_genes = [individual.discrete_gene for individual in self.population]
         population_new_real_genes = list(map(backward_mapping, population_discrete_genes))
         for i in range(len(self.population)):
