@@ -76,3 +76,28 @@ def calculate_fitness_parameters(y, adj_matrix, adj_list):
                 elif abs(y[i] + y[j]) == 1:
                     xx += adj_matrix[i][j]
     return c, xx, m1-m2
+
+
+def find_smalles_eigenvector(adj_matrix, n):
+    D = adj_matrix_deg_matrix(adj_matrix, n)
+    neg_sqrt_D = np.zeros([n, n])
+    for i in range(n):
+        if D[i][i] == 0:
+            neg_sqrt_D[i][i] = 0
+        else:
+            neg_sqrt_D[i, i] = D[i, i] ** (-1 / 2)
+    norm_A = neg_sqrt_D @ adj_matrix @ neg_sqrt_D
+    x = smallest_eigenvector(norm_A + np.identity(n))
+    x_norm = x / max(abs(x))
+    return x
+
+
+def trevisan_cut(active_verts, n, y, log=True):
+    L = [i for i in range(n) if (y[i] == -1) and (i in active_verts)]
+    R = [i for i in range(n) if (y[i] == 1) and (i in active_verts)]
+    V_prime = [i for i in range(n) if (y[i] == 0) and (i in active_verts)]
+    if log:
+        print(f"L = {L}")
+        print(f"R = {R}")
+        print(f"V_prime = {V_prime}")
+    return L, R, V_prime

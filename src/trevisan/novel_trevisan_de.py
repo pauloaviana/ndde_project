@@ -1,17 +1,18 @@
 import numpy as np
-from shared.population import TrevisanIndividual
+from shared.population import NovelTrevisanIndividual
 from shared.mutation import *
 from trevisan_utils import *
-
+from trevisan.trevisan_functions import trevisan_fitness
 
 MUTATION_FUNCTIONS = {"rand/one": de_rand_one, "best/two": de_best_two, "tr_mut": de_trigonometric_mutation}
 
 
-class TrevisanDE:
+class NovelTrevisanDE:
 
     def __init__(self,
                  max_fit: int = 10000,
                  vertices_num: int = 1,
+                 active_verts = np.array([]),
                  adj_matrix = np.array([[]]),
                  adj_list = np.array([[]]),
                  min_aigenvector = np.array([]),
@@ -23,6 +24,7 @@ class TrevisanDE:
 
         self.adj_matrix = adj_matrix
         self.adj_list = adj_list
+        self.active_verts = active_verts
         self.min_aigenvector = min_aigenvector
         self.vertices_num = vertices_num
 
@@ -40,21 +42,36 @@ class TrevisanDE:
         self.population = []
 
         self.start_population()
+        self.best_generation = 0
         self.best_individual = max(self.population, key=lambda individual: individual.fitness)
 
 
     def start_population(self):
-        random_t_list = np.random.uniform(0, 1, (self.population_size, 1))
-        for t in random_t_list:
-            t = float(t)
-            partial_partition = partition(self.min_aigenvector, t, self.vertices_num)
-            c, x, m = calculate_fitness_parameters(partial_partition, self.adj_matrix, self.adj_list)
-            fit = c + float(x / 2) - float(m / 2)
-            self.population.append(TrevisanIndividual(real_gene=t, partition=partial_partition, fitness_value=fit))
+        random_t_matrix = np.random.uniform(0, 1, (self.population_size, 10))
+        for list_t in random_t_matrix:
+
+            cut_val, t_partition = trevisan_fitness(adj_matrix = self.adj_matrix,
+                                                  adj_list = self.adj_list,
+                                                  active_verts = self.active_verts,
+                                                  list_t = list_t,
+                                                  depth_lim=len(list_t))
+            self.population.append(NovelTrevisanIndividual(gene=list_t, partition=t_partition, fitness_value=cut_val))
         return self.population
 
     def evolutionary_process(self):
         for i in range(self.number_generations):
+            if self.best_generation != self.best_individual.evolution_generation:
+                best_individual = self.best_individual
+                list_t = best_individual.vector_gene
+                y = best_individual.partition
+                k = best_individual.evolution_generation
+                cut_val = best_individual.fitness
+
+                self.best_generation = k
+
+                print(f"Generation {k} | t = {','.join(str(t) for t in list_t)}")
+                print(f"Cut Val = {cut_val}")
+                print(f"Partition = {y}")
             self.current_generation += 1
             self.mutation()
             self.exponential_crossover()
@@ -102,30 +119,26 @@ class TrevisanDE:
         ##TODO develop the correct code for crossover
         for individual in self.population:
             individual.trial_gene = individual.mutant_gene
-            arctan = np.arctan(individual.trial_gene[0] / individual.trial_gene[1])
-            gene = abs(arctan) / (np.pi / 2)
-            individual.trial_real_gene = gene
 
     def pairwise_selection(self):
         for individual in self.population:
+            trial_cut_value, trial_partition = trevisan_fitness(adj_matrix=self.adj_matrix,
+                                                    adj_list=self.adj_list,
+                                                    active_verts=self.active_verts,
+                                                    list_t=individual.trial_gene,
+                                                    depth_lim=len(individual.trial_gene))
 
-            trial_partition = partition(self.min_aigenvector, individual.trial_real_gene, self.vertices_num)
-            c, x, m = calculate_fitness_parameters(trial_partition, self.adj_matrix, self.adj_list)
-            trial_fitness = c + float(x / 2) - float(m / 2)
             self.fitness_call += 1
 
-            if trial_fitness > individual.fitness:
-                individual.real_gene = individual.trial_real_gene
+            if trial_cut_value > individual.fitness:
                 individual.vector_gene = individual.trial_gene
-                individual.fitness = trial_fitness
+                individual.fitness = trial_cut_value
                 individual.partition = trial_partition
                 individual.evolution_generation = self.current_generation
 
             #cleaning mutant and trial vectors for next generation
             individual.mutant_gene = np.array([])
             individual.trial_gene = np.array([])
-            individual.trial_real_gene = 0.0
-            individual.last_mutation_method = ""
 
         self.best_individual = max(self.population, key=lambda ind: ind.fitness)
 

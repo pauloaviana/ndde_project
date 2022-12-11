@@ -1,8 +1,8 @@
 import numpy as np
-from population import Individual
+from shared.population import Individual
 from graph import Graph
 from mappers import rank_order_value, backward_mapping
-from mutation import *
+from shared.mutation import *
 
 
 MUTATION_FUNCTIONS = {"rand/one": de_rand_one, "best/two": de_best_two, "tr_mut": de_trigonometric_mutation}

@@ -42,19 +42,26 @@ class TrevisanIndividual:
         self.trial_real_gene = 0.0
 
         self.fitness = fitness_value
-        self.age = 0
         self.last_mutation_method = ""
         self.evolution_generation = 1
 
-    def set_mutation_method(self, mutation_method):
-        self.last_mutation_method = mutation_method
+    def to_string(self):
+        return f"Gene {self.real_gene:0.5f}, Fitness = {self.fitness}"
 
-    def aging(self):
-        self.age += 1
-        return self
 
-    def gene_to_string(self):
-        return "-".join(map(str, self.discrete_gene))
+class NovelTrevisanIndividual:
+
+    def __init__(self, gene, partition, fitness_value):
+        self.id = uuid4()
+
+        self.vector_gene = gene
+        self.partition = partition
+
+        self.mutant_gene = array([])
+        self.trial_gene = array([])
+
+        self.fitness = fitness_value
+        self.evolution_generation = 1
 
     def to_string(self):
-        return f"Gene {self.gene_to_string()}, Fitness = {self.fitness}"
+        return f"Gene {self.vector_gene}, Fitness = {self.fitness}"
