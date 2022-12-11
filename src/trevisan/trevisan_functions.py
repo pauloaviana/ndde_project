@@ -17,9 +17,11 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, dept
 
     if depth+1 >= depth_lim or len(V_prime) == 0:
         A = []
+        last_significant_depth = depth
     else:
-        cut_val, A = trevisan_fitness(adj_matrix=induced_subgraph(adj_matrix, V_prime),  adj_list=adj_list,
-                                      active_verts=V_prime, list_t = list_t, depth=depth+1, depth_lim=depth_lim)
+        cut_val, A, last_significant_depth = trevisan_fitness(adj_matrix=induced_subgraph(adj_matrix, V_prime),
+                                                              adj_list=adj_list, active_verts=V_prime, list_t = list_t,
+                                                              depth=depth+1, depth_lim=depth_lim)
 
     AL, AR = [], []
     AL.extend(A)
@@ -31,9 +33,9 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, dept
     cut_val_2 = cut_value(adj_matrix, AR, adj_list)
 
     if cut_val_1 > cut_val_2:
-        return (cut_val_1, AL)
+        return (cut_val_1, AL, last_significant_depth)
     else:
-        return (cut_val_2, AR)
+        return (cut_val_2, AR, last_significant_depth)
 
 
 def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth = 0):

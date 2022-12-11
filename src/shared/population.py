@@ -45,13 +45,14 @@ class TrevisanIndividual:
         self.last_mutation_method = ""
         self.evolution_generation = 1
 
+
     def to_string(self):
         return f"Gene {self.real_gene:0.5f}, Fitness = {self.fitness}"
 
 
 class NovelTrevisanIndividual:
 
-    def __init__(self, gene, partition, fitness_value):
+    def __init__(self, gene, partition, fitness_value, last_significant_gene):
         self.id = uuid4()
 
         self.vector_gene = gene
@@ -62,6 +63,7 @@ class NovelTrevisanIndividual:
 
         self.fitness = fitness_value
         self.evolution_generation = 1
+        self.last_significant_gene = last_significant_gene
 
     def to_string(self):
         return f"Gene {self.vector_gene}, Fitness = {self.fitness}"

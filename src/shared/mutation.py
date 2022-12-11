@@ -61,7 +61,7 @@ def de_rand_one_trevisan(population: List[NovelTrevisanIndividual], mutation_rat
         vector_r1 = r1.vector_gene
         vector_r2 = r2.vector_gene
         vector_r3 = r3.vector_gene
-        target.mutant_gene = vector_r1 + mutation_rate_f * (vector_r2 - vector_r3)
+        target.mutant_gene = vector_r1 + mutation_rate_f * abs(vector_r2-vector_r3)
 
 
 def de_best_two(population: List[Individual], mutation_rate_f: float):
@@ -86,9 +86,9 @@ def de_best_two(population: List[Individual], mutation_rate_f: float):
         target.mutant_gene = mutant_vector
 
 
-def de_best_two_trevisan(population: List[NovelTrevisanIndividual], mutation_rate_f: float):
+def de_best_two_trevisan(population: List[NovelTrevisanIndividual], best_individual: NovelTrevisanIndividual,
+                         mutation_rate_f: float):
 
-    best = max(population, key=lambda individual: individual.fitness)
     for target in population:
         rng = np.random.default_rng()
         indexes = rng.choice(len(population), size=4, replace=False)
@@ -98,36 +98,14 @@ def de_best_two_trevisan(population: List[NovelTrevisanIndividual], mutation_rat
         r3 = population[indexes[2]]
         r4 = population[indexes[3]]
 
-        vector_best = best.vector_gene
+        vector_best = best_individual.vector_gene
         vector_r1 = r1.vector_gene
         vector_r2 = r2.vector_gene
         vector_r3 = r3.vector_gene
         vector_r4 = r4.vector_gene
         mutant_vector = vector_best + (mutation_rate_f * (vector_r1 - vector_r2))
         mutant_vector += mutation_rate_f * (vector_r3 - vector_r4)
-        target.mutant_gene = mutant_vector
-
-
-def de_best_two_trevisan(population: List[NovelTrevisanIndividual], mutation_rate_f: float):
-
-    best = max(population, key=lambda individual: individual.fitness)
-    for target in population:
-        rng = np.random.default_rng()
-        indexes = rng.choice(len(population), size=4, replace=False)
-
-        r1 = population[indexes[0]]
-        r2 = population[indexes[1]]
-        r3 = population[indexes[2]]
-        r4 = population[indexes[3]]
-
-        vector_best = best.vector_gene
-        vector_r1 = r1.vector_gene
-        vector_r2 = r2.vector_gene
-        vector_r3 = r3.vector_gene
-        vector_r4 = r4.vector_gene
-        mutant_vector = vector_best + (mutation_rate_f * (vector_r1 - vector_r2))
-        mutant_vector += mutation_rate_f * (vector_r3 - vector_r4)
-        target.mutant_gene = mutant_vector
+        target.mutant_gene = abs(mutant_vector / max(mutant_vector))
 
 
 def de_trigonometric_mutation(population: List[Individual]):

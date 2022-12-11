@@ -3,6 +3,7 @@ import numpy as np
 
 def partition(x, t, n):
     p = np.zeros(n)
+
     for i in range(n):
         if x[i] <= -np.sqrt(t):
             p[i] = -1
