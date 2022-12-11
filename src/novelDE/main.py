@@ -6,7 +6,7 @@ from time import time
 
 if __name__ == '__main__':
     start = time()
-    problem = tsplib95.load('../libs/tsp/a280.tsp')
+    problem = tsplib95.load('../../libs/tsp/a280.tsp')
 
     population_size = 50
     graph = Graph(problem)
