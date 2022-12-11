@@ -23,12 +23,12 @@ def main(method):
 
 
 def main_evolutionary():
-    graph = nx.Graph()
-    #graph = nx.complete_graph(40)
+    #graph = nx.Graph()
+    graph = nx.complete_graph(50)
     rng = np.random.default_rng()
     #numbers = rng.choice(10, size=(100, 2), replace=True)
-    numbers = [[0,1],[0,2],[0,3],[1,4],[1,5],[2,6],[2,7],[3,8],[3,9],[4,10],[4,11],[5,12],[5,13]]
-    graph.add_edges_from(numbers)
+    #numbers = [[0,1],[0,2],[0,3],[1,4],[1,5],[2,6],[2,7],[3,8],[3,9],[4,10],[4,11],[5,12],[5,13]]
+    #graph.add_edges_from(numbers)
 
     adj_matrix = nx.adjacency_matrix(graph).toarray()
     adj_list = get_adj_list(adj_matrix)
@@ -45,8 +45,9 @@ def main_evolutionary():
                          adj_matrix=adj_matrix,
                          adj_list=adj_list,
                          min_aigenvector=x,
-                         population_size = 20,
-                         mutation_parameter = 0.5,
+                         population_size = 10,
+                         problem_size = 10,
+                         mutation_parameter = 0.2,
                          number_generations = num_iter)
 
     de.evolutionary_process()

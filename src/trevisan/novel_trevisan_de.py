@@ -17,6 +17,7 @@ class NovelTrevisanDE:
                  adj_list = np.array([[]]),
                  min_aigenvector = np.array([]),
                  population_size: int = 100,
+                 problem_size: int = 10,
                  mutation_parameter: int = 0.1,
                  crossover_probability: int = 0.1,
                  number_generations: int = 200,
@@ -30,6 +31,7 @@ class NovelTrevisanDE:
 
         self.number_generations = number_generations
         self.population_size = population_size
+        self.problem_size = problem_size
         self.max_fit = max_fit
         self.fitness_call = 0
         self.current_generation = 0
@@ -47,7 +49,7 @@ class NovelTrevisanDE:
 
 
     def start_population(self):
-        random_t_matrix = np.random.uniform(0, 1, (self.population_size, 10))
+        random_t_matrix = np.random.uniform(0, 1, (self.population_size, self.problem_size))
         for list_t in random_t_matrix:
 
             cut_val, t_partition = trevisan_fitness(adj_matrix = self.adj_matrix,
