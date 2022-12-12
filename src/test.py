@@ -58,8 +58,8 @@ def main_evolutionary(graph):
                          mutation_parameter = 0.5,
                          number_generations = 125)
 
-    y, cut_val, k = de.evolutionary_process()
-    return y, cut_val, k
+    y, cut_val, k, lsg = de.evolutionary_process()
+    return y, cut_val, k, lsg
 
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         print(f"[Working with Graph: {i}]\n")
         #graph = create_graph(path, 'g05_60_0.csv')
         start_gpu_time = time.process_time()
-        y, cut_val, k = main_evolutionary(graph)
+        y, cut_val, k, lsg = main_evolutionary(graph)
         end_gpu_time = time.process_time()
 
         clock = end_gpu_time - start_gpu_time
@@ -86,6 +86,9 @@ if __name__ == '__main__':
 
         gens.append(k)
         print(f"Generations = {k}")
+
+        gens.append(lsg)
+        print(f"Depth = {lsg}")
 
         graph_name.append(i)
         print(f"graph = {i}")
@@ -105,4 +108,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_pickle("one_total_run.pkl")
+    df.to_pickle("one_total_run3.pkl")
