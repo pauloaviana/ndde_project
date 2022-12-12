@@ -53,5 +53,5 @@ def main_evolutionary():
 
 if __name__ == '__main__':
     #main(trevisan_de)
-    #main(trevisan_random)
-    main_evolutionary()
+    main(trevisan_random)
+    #main_evolutionary()

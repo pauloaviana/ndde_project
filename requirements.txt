@@ -2,4 +2,5 @@ scipy==1.8.1
 networkx==2.8.8
 numpy
 tsplib95
+pandas
 uuid
