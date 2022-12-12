@@ -1,6 +1,6 @@
 import numpy as np
-from shared.population import TrevisanIndividual
-from shared.mutation import *
+from population import TrevisanIndividual
+from mutation import *
 from trevisan_utils import *
 
 
@@ -137,4 +137,6 @@ class TrevisanDE:
             if success_rate > best_rate:
                 best_rate = success_rate
                 self.current_mutation_method = MUTATION_FUNCTIONS[key]
+
+
 

@@ -1,4 +1,4 @@
-from shared.population import Individual, NovelTrevisanIndividual
+from population import Individual, NovelTrevisanIndividual
 from typing import List
 import numpy as np
 
