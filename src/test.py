@@ -12,6 +12,7 @@ gens = []
 graph_name = []
 num_edges = []
 num_vertices = []
+depth = []
 
 def list_files(path):
     f = []
@@ -87,7 +88,7 @@ if __name__ == '__main__':
         gens.append(k)
         print(f"Generations = {k}")
 
-        gens.append(lsg)
+        depth.append(lsg)
         print(f"Depth = {lsg}")
 
         graph_name.append(i)
@@ -98,6 +99,7 @@ if __name__ == '__main__':
 
         num_edges.append(graph.number_of_edges())
         print(f"Number of Edges = {graph.number_of_edges()}\n")
+
     df['graph'] = graph_name
     df['cuts'] = cuts
     df['best_partition'] = best_part
@@ -105,6 +107,7 @@ if __name__ == '__main__':
     df['vertices'] = num_vertices
     df['edges'] = num_edges
     df['time'] = run_time
+    df['depth'] = depth
 
     df.head()
 
