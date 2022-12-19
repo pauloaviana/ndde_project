@@ -48,18 +48,21 @@ def main_evolutionary(graph):
     x = find_smalles_eigenvector(adj_matrix, n)
 
     #print(f"Vertices = {active_vertices}")
+    num_gen = 55
+    mut_par = 0.70
+    pop_size = 6
 
     de = NovelTrevisanDE(vertices_num=n,
                          active_verts=active_vertices,
                          adj_matrix=adj_matrix,
                          adj_list=adj_list,
                          min_aigenvector=x,
-                         population_size = 10,
+                         population_size = pop_size,
                          problem_size = 10,
-                         mutation_parameter = 0.5,
-                         number_generations = 125)
+                         mutation_parameter = mut_par,
+                         number_generations = num_gen)
 
-    y, cut_val, k, lsg = de.evolutionary_process()
+    y, cut_val, k, lsg, = de.evolutionary_process()
     return y, cut_val, k, lsg
 
 
@@ -74,6 +77,9 @@ if __name__ == '__main__':
         start_gpu_time = time.process_time()
         y, cut_val, k, lsg = main_evolutionary(graph)
         end_gpu_time = time.process_time()
+        num_gen = 55
+        mut_par = 0.70
+        pop_size = 6
 
         clock = end_gpu_time - start_gpu_time
         run_time.append(clock)
@@ -108,7 +114,10 @@ if __name__ == '__main__':
     df['edges'] = num_edges
     df['time'] = run_time
     df['depth'] = depth
+    df['g_max'] = num_gen
+    df['mutation'] = mut_par
+    df['population'] = pop_size
 
     df.head()
 
-    df.to_pickle("one_total_run3.pkl")
+    df.to_pickle("data_26.pkl")
