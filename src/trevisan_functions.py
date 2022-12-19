@@ -4,7 +4,7 @@ import random as rn
 from trevisan_de import TrevisanDE
 from trevisan_utils import *
 
-DEPTH_LIM = 50
+#DEPTH_LIM = 50
 
 
 def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, depth_lim = 1):
