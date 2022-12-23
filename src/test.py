@@ -48,8 +48,8 @@ def main_evolutionary(graph):
     x = find_smalles_eigenvector(adj_matrix, n)
 
     #print(f"Vertices = {active_vertices}")
-    num_gen = 55
-    mut_par = 0.70
+    num_gen = 60
+    mut_par = 0.50
     pop_size = 6
 
     de = NovelTrevisanDE(vertices_num=n,
@@ -62,24 +62,20 @@ def main_evolutionary(graph):
                          mutation_parameter = mut_par,
                          number_generations = num_gen)
 
-    y, cut_val, k, lsg, = de.evolutionary_process()
-    return y, cut_val, k, lsg
+    y, cut_val, k, lsg, num_gen, mut_par, pop_size = de.evolutionary_process()
+    return y, cut_val, k, lsg, num_gen, mut_par, pop_size
 
 
 if __name__ == '__main__':
     path = "libs"
     files = list_files(path)
-    #print(files[0])
     for i in files:
         graph = create_graph(path, i)
         print(f"[Working with Graph: {i}]\n")
         #graph = create_graph(path, 'g05_60_0.csv')
         start_gpu_time = time.process_time()
-        y, cut_val, k, lsg = main_evolutionary(graph)
+        y, cut_val, k, lsg, num_gen, mut_par, pop_size = main_evolutionary(graph)
         end_gpu_time = time.process_time()
-        num_gen = 55
-        mut_par = 0.70
-        pop_size = 6
 
         clock = end_gpu_time - start_gpu_time
         run_time.append(clock)
@@ -120,4 +116,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_pickle("data_26.pkl")
+    df.to_pickle("data.pkl")

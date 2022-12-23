@@ -70,6 +70,9 @@ class NovelTrevisanDE:
                 k = best_individual.evolution_generation
                 cut_val = best_individual.fitness
                 lsg = best_individual.last_significant_gene
+                num_gen = self.number_generations
+                mut_par = self.mutation_parameter
+                pop_size = self.population_size
 
                 self.best_generation = k
 
@@ -82,7 +85,7 @@ class NovelTrevisanDE:
             self.mutation()
             self.exponential_crossover()
             self.pairwise_selection()
-        return y, cut_val, k, lsg
+        return y, cut_val, k, lsg, num_gen, mut_par, pop_size
         
 
     def mutation(self):
