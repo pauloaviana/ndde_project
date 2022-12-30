@@ -1,7 +1,7 @@
 import numpy as np
-from population import TrevisanIndividual
-from mutation import *
-from trevisan_utils import *
+from src.models.population import TrevisanIndividual
+from src.utils.mutation import *
+from src.trevisan.functions import *
 
 
 MUTATION_FUNCTIONS = {"rand/one": de_rand_one, "best/two": de_best_two, "tr_mut": de_trigonometric_mutation}

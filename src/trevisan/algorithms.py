@@ -1,11 +1,8 @@
-import numpy as np
-import networkx as nx
 import random as rn
-from trevisan_de import TrevisanDE
-from trevisan_utils import *
+from src.models.trevisan_de import TrevisanDE
+from src.trevisan.functions import *
 
-#DEPTH_LIM = 50
-
+DEPTH_LIM = 50
 
 def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, depth_lim = 1):
 
@@ -33,9 +30,9 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, dept
     cut_val_2 = cut_value(adj_matrix, AR, adj_list)
 
     if cut_val_1 > cut_val_2:
-        return (cut_val_1, AL, last_significant_depth)
+        return cut_val_1, AL, last_significant_depth
     else:
-        return (cut_val_2, AR, last_significant_depth)
+        return cut_val_2, AR, last_significant_depth
 
 
 def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
@@ -76,12 +73,12 @@ def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
     cut_val_2 = cut_value(adj_matrix, AR, adj_list)
 
     if cut_val_1 > cut_val_2:
-        return (cut_val_1, AL)
+        return cut_val_1, AL
     else:
-        return (cut_val_2, AR)
+        return cut_val_2, AR
 
 
-def trevisan_random(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
+def trevisan_sato(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
 
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
@@ -105,7 +102,7 @@ def trevisan_random(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
     if depth >= DEPTH_LIM or len(V_prime) == 0:
         A = []
     else:
-        cut_val, A = trevisan_random(induced_subgraph(adj_matrix, V_prime), adj_list, V_prime, num_iter, depth + 1)
+        cut_val, A = trevisan_sato(induced_subgraph(adj_matrix, V_prime), adj_list, V_prime, num_iter, depth + 1)
 
     AL, AR = [], []
     AL.extend(A)
@@ -117,7 +114,7 @@ def trevisan_random(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
     cut_val_2 = cut_value(adj_matrix, AR, adj_list)
 
     if cut_val_1 > cut_val_2:
-        return (cut_val_1, AL)
+        return cut_val_1, AL
     else:
-        return (cut_val_2, AR)
+        return cut_val_2, AR
 

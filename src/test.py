@@ -1,7 +1,8 @@
 from os import walk
 import pandas as pd
-from trevisan_functions import *
-from novel_trevisan_de import NovelTrevisanDE
+import networkx as nx
+from src.models.novel_trevisan_de import NovelTrevisanDE
+from src.trevisan.algorithms import *
 import time
 
 df = pd.DataFrame()
@@ -47,7 +48,6 @@ def main_evolutionary(graph):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
-    #print(f"Vertices = {active_vertices}")
     num_gen = 60
     mut_par = 0.50
     pop_size = 6
@@ -67,17 +67,17 @@ def main_evolutionary(graph):
 
 
 if __name__ == '__main__':
-    path = "libs"
+    path = "../data/max_cut"
     files = list_files(path)
-    for i in files:
-        graph = create_graph(path, i)
-        print(f"[Working with Graph: {i}]\n")
-        #graph = create_graph(path, 'g05_60_0.csv')
-        start_gpu_time = time.process_time()
-        y, cut_val, k, lsg, num_gen, mut_par, pop_size = main_evolutionary(graph)
-        end_gpu_time = time.process_time()
+    for file in files:
+        graph = create_graph(path, file)
+        print(f"[Working with Graph: {file}]\n")
 
-        clock = end_gpu_time - start_gpu_time
+        start_cpu_time = time.process_time()
+        y, cut_val, k, lsg, num_gen, mut_par, pop_size = main_evolutionary(graph)
+        end_cpu_time = time.process_time()
+
+        clock = end_cpu_time - start_cpu_time
         run_time.append(clock)
         print(f"\nTime = {clock}")
 
@@ -93,8 +93,8 @@ if __name__ == '__main__':
         depth.append(lsg)
         print(f"Depth = {lsg}")
 
-        graph_name.append(i)
-        print(f"graph = {i}")
+        graph_name.append(file)
+        print(f"graph = {file}")
 
         num_vertices.append(graph.number_of_nodes())
         print(f"Number of Vertices = {graph.number_of_nodes()}")
@@ -116,4 +116,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_pickle("data.pkl")
+    df.to_pickle("../statistics/files/data.pkl")

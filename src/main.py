@@ -1,6 +1,6 @@
-from novel_trevisan_de import NovelTrevisanDE
-from trevisan_utils import *
-from trevisan_functions import *
+from src.models.novel_trevisan_de import NovelTrevisanDE
+from src.trevisan.algorithms import *
+import networkx as nx
 
 
 def main(method):
@@ -53,5 +53,5 @@ def main_evolutionary():
 
 if __name__ == '__main__':
     #main(trevisan_de)
-    main(trevisan_random)
+    main(trevisan_sato)
     #main_evolutionary()

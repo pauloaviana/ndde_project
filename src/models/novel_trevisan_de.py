@@ -1,8 +1,6 @@
-import numpy as np
-from population import NovelTrevisanIndividual
-from mutation import *
-from trevisan_utils import *
-from trevisan_functions import trevisan_fitness
+from src.utils.mutation import *
+from src.trevisan.functions import *
+from src.trevisan.algorithms import trevisan_fitness
 
 MUTATION_FUNCTIONS = {"rand/one": de_rand_one, "best/two": de_best_two, "tr_mut": de_trigonometric_mutation}
 
