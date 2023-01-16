@@ -1,6 +1,9 @@
+import numpy as np
+import pandas as pd
+
+from numpy import sin, cos, exp, pi
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
-import numpy as np
 from typing import List
 
 from individual import Jordan_Individual
@@ -11,6 +14,35 @@ from individual import Jordan_Individual
  All funtions to be used in jordan_de or j_mode goes here.
 
 '''
+# graph modelling
+
+def polar_to_cartesian(r,theta):
+    x = r * cos(theta)
+    y = r * sin(theta)
+    return x,y
+
+def circle_distribution(path, filename):
+    filepath = path+"/"+filename
+    graph_dataframe = pd.read_csv(filepath, header=0, names=['vertice_A', 'vertice_B', 'weight'])
+
+    total_vertices = 0
+    for vertice in graph_dataframe.vertice_B:
+        if vertice > total_vertices:
+            total_vertices = vertice
+
+    graph_matrix = np.zeros((total_vertices,total_vertices))
+    #make incidence matrix here
+    
+
+    radian_spacing = 2* pi / total_vertices
+    graph_coordinates = []
+    for i in range(60):
+        node_coordinates = polar_to_cartesian(1,radian_spacing*i)
+        graph_coordinates.append(node_coordinates)
+    
+    return graph_dataframe, graph_coordinates
+
+
 
 # Fitness evaluation functions
 
