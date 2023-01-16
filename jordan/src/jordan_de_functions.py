@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import csv
 
 from numpy import sin, cos, exp, pi
 from shapely.geometry import Point
@@ -21,28 +22,27 @@ def polar_to_cartesian(r,theta):
     y = r * sin(theta)
     return x,y
 
-def circle_distribution(path, filename):
-    filepath = path+"/"+filename
-    graph_dataframe = pd.read_csv(filepath, header=0, names=['vertice_A', 'vertice_B', 'weight'])
+def create_incidence_matrix(edge_list):
+    size = edge_list[0][0]
+    size_tpl = edge_list.shape
 
-    total_vertices = 0
-    for vertice in graph_dataframe.vertice_B:
-        if vertice > total_vertices:
-            total_vertices = vertice
+    incidence_matrix = np.zeros((size,size))
+    for i in range(1,size_tpl[0]):
+        origin = edge_list[i][0]
+        destiny = edge_list[i][1]
+        weight = edge_list[i][2]
+        incidence_matrix[origin-1][destiny-1] = weight
+        incidence_matrix[destiny-1][origin-1] = weight
+    return incidence_matrix
 
-    graph_matrix = np.zeros((total_vertices,total_vertices))
-    #make incidence matrix here
-    
-
+def circular_node_distribution(total_vertices):
     radian_spacing = 2* pi / total_vertices
     graph_coordinates = []
     for i in range(60):
         node_coordinates = polar_to_cartesian(1,radian_spacing*i)
         graph_coordinates.append(node_coordinates)
     
-    return graph_dataframe, graph_coordinates
-
-
+    return graph_coordinates
 
 # Fitness evaluation functions
 
