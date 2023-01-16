@@ -106,6 +106,7 @@ def de_best_two_trevisan(population: List[NovelTrevisanIndividual], best_individ
         mutant_vector = vector_best + (mutation_rate_f * (vector_r1 - vector_r2))
         mutant_vector += mutation_rate_f * (vector_r3 - vector_r4)
         target.mutant_gene = abs(mutant_vector / max(mutant_vector))
+    return population
 
 
 def de_trigonometric_mutation(population: List[Individual]):
