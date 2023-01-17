@@ -116,4 +116,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_pickle("../statistics/files/data.pkl")
+    df.to_csv("../statistics/csv_files/data.csv")
