@@ -1,6 +1,10 @@
+import numpy as np
+import pandas as pd
+import csv
+
+from numpy import sin, cos, exp, pi
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
-import numpy as np
 from typing import List
 
 from individual import Jordan_Individual
@@ -11,6 +15,34 @@ from individual import Jordan_Individual
  All funtions to be used in jordan_de or j_mode goes here.
 
 '''
+# graph modelling
+
+def polar_to_cartesian(r,theta):
+    x = r * cos(theta)
+    y = r * sin(theta)
+    return x,y
+
+def create_incidence_matrix(edge_list):
+    size = edge_list[0][0]
+    size_tpl = edge_list.shape
+
+    incidence_matrix = np.zeros((size,size))
+    for i in range(1,size_tpl[0]):
+        origin = edge_list[i][0]
+        destiny = edge_list[i][1]
+        weight = edge_list[i][2]
+        incidence_matrix[origin-1][destiny-1] = weight
+        incidence_matrix[destiny-1][origin-1] = weight
+    return incidence_matrix
+
+def circular_node_distribution(total_vertices):
+    radian_spacing = 2* pi / total_vertices
+    graph_coordinates = []
+    for i in range(60):
+        node_coordinates = polar_to_cartesian(1,radian_spacing*i)
+        graph_coordinates.append(node_coordinates)
+    
+    return graph_coordinates
 
 # Fitness evaluation functions
 
