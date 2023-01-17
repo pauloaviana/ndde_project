@@ -68,7 +68,7 @@ def main_evolutionary(graph):
 
 
 if __name__ == '__main__':
-    path = "..\data\max_cut"
-    file = "g05_60_0.csv"
+    path = "..\data\erdos_renyi"
+    file = "er_60_40_0.csv"
     graph = create_graph(path, file)
     main_evolutionary(graph)

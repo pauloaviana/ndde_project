@@ -21,7 +21,7 @@ def list_files(path):
         if not filenames:
             continue
         for file in filenames:
-            if 'g05' in file:
+            if 'er_' in file:
                 f.append(file)
         break
     return f
@@ -67,7 +67,7 @@ def main_evolutionary(graph):
 
 
 if __name__ == '__main__':
-    path = "../data/max_cut"
+    path = "../data/erdos_renyi"
     files = list_files(path)
     for file in files:
         graph = create_graph(path, file)
