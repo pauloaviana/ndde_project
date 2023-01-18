@@ -4,3 +4,5 @@ numpy
 tsplib95
 pandas
 uuid
+cvxpy
+cxopt

@@ -1,9 +1,11 @@
-from os import walk
 import pandas as pd
 import networkx as nx
 from src.models.novel_trevisan_de import NovelTrevisanDE
 from src.trevisan.algorithms import *
+from src.utils.graph import create_graph
+from src.utils.files import list_files
 import time
+
 
 df = pd.DataFrame()
 run_time = []
@@ -14,29 +16,6 @@ graph_name = []
 num_edges = []
 num_vertices = []
 depth = []
-
-def list_files(path):
-    f = []
-    for (dirpath, dirnames, filenames) in walk(path):
-        if not filenames:
-            continue
-        for file in filenames:
-            if 'g05' in file:
-                f.append(file)
-        break
-    return f
-
-
-def create_graph(path, filename):
-    filepath = path+"/"+filename
-    df = pd.read_csv(filepath, header=0, names=['vertice_A', 'vertice_B', 'weight'])
-    graph = nx.Graph()
-    edges = []
-    for index, row in df.iterrows():
-        edge = [row['vertice_A'], row['vertice_B']]
-        edges.append(edge)
-    graph.add_edges_from(edges)
-    return graph
 
 
 def main_evolutionary(graph):
