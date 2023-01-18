@@ -46,7 +46,7 @@ def main_evolutionary(graph):
 
 
 if __name__ == '__main__':
-    path = "../data/max_cut"
+    path = "../data/erdos_renyi"
     files = list_files(path)
     for file in files:
         graph = create_graph(path, file)
@@ -95,4 +95,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_pickle("../statistics/files/data.pkl")
+    df.to_csv("../statistics/csv_files/data.csv")
