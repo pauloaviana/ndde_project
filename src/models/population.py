@@ -54,6 +54,7 @@ class NovelTrevisanIndividual:
 
     def __init__(self, gene, partition, fitness_value, last_significant_gene):
         self.id = uuid4()
+        self.fitness_history = []
 
         self.vector_gene = gene
         self.partition = partition
