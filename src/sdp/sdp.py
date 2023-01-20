@@ -43,7 +43,7 @@ def cut_size(A, T):
 if __name__ == '__main__':
 
     np.seterr(all="ignore")
-    path = "data/erdos_renyi"
+    path = "../../data/erdos_renyi"
     files = list_files(path)
     for file in files:
         graph = create_graph(path, file)
@@ -82,4 +82,4 @@ if __name__ == '__main__':
     df['edges'] = num_edges
     df['time'] = run_time
 
-    df.to_csv("statistics/csv/sdp.csv")
+    df.to_csv("../../statistics/sdp.csv")

@@ -3,6 +3,7 @@ import pandas as pd
 import networkx as nx
 from src.models.novel_trevisan_de import NovelTrevisanDE
 from src.trevisan.algorithms import *
+from src.utils.graph import create_graph
 import time
 
 df = pd.DataFrame()
@@ -17,26 +18,15 @@ depth = []
 
 def list_files(path):
     f = []
+    extensions = ['.csv', '.tsp']
     for (dirpath, dirnames, filenames) in walk(path):
         if not filenames:
             continue
         for file in filenames:
-            if 'er_' in file:
+            if any(ext in file for ext in extensions):
                 f.append(file)
         break
     return f
-
-
-def create_graph(path, filename):
-    filepath = path+"/"+filename
-    df = pd.read_csv(filepath, header=0, names=['vertice_A', 'vertice_B', 'weight'])
-    graph = nx.Graph()
-    edges = []
-    for index, row in df.iterrows():
-        edge = [row['vertice_A'], row['vertice_B']]
-        edges.append(edge)
-    graph.add_edges_from(edges)
-    return graph
 
 
 def main_evolutionary(graph):
@@ -67,10 +57,10 @@ def main_evolutionary(graph):
 
 
 if __name__ == '__main__':
-    path = "data/erdos_renyi"
+    path = "../data/erdos_renyi"
     files = list_files(path)
     for file in files:
-        graph = create_graph(path, file)
+        graph = create_graph(path, file, type='erdos_renyi')
         print(f"[Working with Graph: {file}]\n")
 
         start_cpu_time = time.process_time()
@@ -116,4 +106,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_csv("statistics/csv/data-p2.csv")
+    df.to_csv("../statistics/csv/data-p2.csv")
