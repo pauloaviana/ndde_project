@@ -90,7 +90,7 @@ def find_smalles_eigenvector(adj_matrix, n):
     norm_A = neg_sqrt_D @ adj_matrix @ neg_sqrt_D
     x = smallest_eigenvector(norm_A + np.identity(n))
     x_norm = x / max(abs(x))
-    return x
+    return x_norm
 
 
 def trevisan_cut(active_verts, n, y, log=True):
