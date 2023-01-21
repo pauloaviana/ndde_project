@@ -104,14 +104,23 @@ def trevisan_cut(active_verts, n, y, log=True):
     return L, R, V_prime
 
 def sweep(A, n, adj_list):
-    min_vect = find_smalles_eigenvector(A, n)
-    p = np.argsort(min_vect)
+    D = adj_matrix_deg_matrix(adj_matrix, n)
+    neg_sqrt_D = np.zeros([n, n])
+    for i in range(n):
+        if D[i][i] == 0:
+            neg_sqrt_D[i][i] = 0
+        else:
+            neg_sqrt_D[i, i] = D[i, i] ** (-1 / 2)
+    norm_mat = neg_sqrt_D @ adj_matrix @ neg_sqrt_D
+    x = smallest_eigenvector(norm_mat + np.identity(n))
+
+    p = np.argsort(x)
     max_val = 0
     max_cut = []
-    
-    for i in range(n):
-        val = cut_value(A, p[0:i], adj_list)
-        max_val = val
-        partition = p[0:i]
-    return max_val, partition
 
+    for i in range(n):
+        val = cut_value(adj_matrix, p[:i], adj_list)
+        if val > max_val:
+            max_val = val
+            partition = p[:i]
+    return max_val, partition
