@@ -84,7 +84,14 @@ class NovelTrevisanDE:
             self.mutation()
             self.exponential_crossover()
             self.pairwise_selection()
-        return y, cut_val, k, lsg, num_gen, mut_par, pop_size
+
+        #TRYING TO SAVE EACH INDIVIDUAL'S FITNESS HISTORY
+        pop_fit_history = []
+        for individual in self.population:
+            pop_fit_history.append(individual.fitness_history)
+
+
+        return y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history
         
 
     def mutation(self):
@@ -124,6 +131,7 @@ class NovelTrevisanDE:
                 individual.evolution_generation = self.current_generation
 
             #cleaning mutant and trial vectors for next generation
+            individual.fitness_history.append(individual.fitness)
             individual.mutant_gene = np.array([])
             individual.trial_gene = np.array([])
 

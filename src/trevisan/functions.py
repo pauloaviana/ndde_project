@@ -90,7 +90,7 @@ def find_smalles_eigenvector(adj_matrix, n):
     norm_A = neg_sqrt_D @ adj_matrix @ neg_sqrt_D
     x = smallest_eigenvector(norm_A + np.identity(n))
     x_norm = x / max(abs(x))
-    return x
+    return x_norm
 
 
 def trevisan_cut(active_verts, n, y, log=True):
@@ -102,3 +102,25 @@ def trevisan_cut(active_verts, n, y, log=True):
         print(f"R = {R}")
         print(f"V_prime = {V_prime}")
     return L, R, V_prime
+
+def sweep(A, n, adj_list):
+    D = adj_matrix_deg_matrix(adj_matrix, n)
+    neg_sqrt_D = np.zeros([n, n])
+    for i in range(n):
+        if D[i][i] == 0:
+            neg_sqrt_D[i][i] = 0
+        else:
+            neg_sqrt_D[i, i] = D[i, i] ** (-1 / 2)
+    norm_mat = neg_sqrt_D @ adj_matrix @ neg_sqrt_D
+    x = smallest_eigenvector(norm_mat + np.identity(n))
+
+    p = np.argsort(x)
+    max_val = 0
+    max_cut = []
+
+    for i in range(n):
+        val = cut_value(adj_matrix, p[:i], adj_list)
+        if val > max_val:
+            max_val = val
+            partition = p[:i]
+    return max_val, partition

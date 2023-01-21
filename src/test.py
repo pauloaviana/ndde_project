@@ -41,8 +41,8 @@ def main_evolutionary(graph):
                          mutation_parameter = mut_par,
                          number_generations = num_gen)
 
-    y, cut_val, k, lsg, num_gen, mut_par, pop_size = de.evolutionary_process()
-    return y, cut_val, k, lsg, num_gen, mut_par, pop_size
+    y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = de.evolutionary_process()
+    return y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history
 
 
 if __name__ == '__main__':
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         print(f"[Working with Graph: {file}]\n")
 
         start_cpu_time = time.process_time()
-        y, cut_val, k, lsg, num_gen, mut_par, pop_size = main_evolutionary(graph)
+        y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = main_evolutionary(graph)
         end_cpu_time = time.process_time()
 
         clock = end_cpu_time - start_cpu_time
@@ -95,4 +95,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_csv("../statistics/csv_files/data.csv")
+    df.to_csv("../statistics/csv_files/data_0.csv")
