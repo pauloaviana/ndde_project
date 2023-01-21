@@ -52,19 +52,19 @@ def main_evolutionary(graph):
                          mutation_parameter = mut_par,
                          number_generations = num_gen)
 
-    y, cut_val, k, lsg, num_gen, mut_par, pop_size = de.evolutionary_process()
-    return y, cut_val, k, lsg, num_gen, mut_par, pop_size
+    y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = de.evolutionary_process()
+    return y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history
 
 
 if __name__ == '__main__':
-    path = "../data/erdos_renyi"
+    path = "data/erdos_renyi"
     files = list_files(path)
     for file in files:
         graph = create_graph(path, file, type='erdos_renyi')
         print(f"[Working with Graph: {file}]\n")
 
         start_cpu_time = time.process_time()
-        y, cut_val, k, lsg, num_gen, mut_par, pop_size = main_evolutionary(graph)
+        y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = main_evolutionary(graph)
         end_cpu_time = time.process_time()
 
         clock = end_cpu_time - start_cpu_time
@@ -106,4 +106,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_csv("../statistics/csv/data-p2.csv")
+    df.to_csv("statistics/csv/data-p2.csv")
