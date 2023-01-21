@@ -106,4 +106,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_csv("statistics/csv/data-p2.csv")
+    df.to_csv("statistics/csv_files/data-p3.csv")
