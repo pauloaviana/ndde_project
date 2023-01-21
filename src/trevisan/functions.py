@@ -104,7 +104,7 @@ def trevisan_cut(active_verts, n, y, log=True):
     return L, R, V_prime
 
 def sweep(A, n, adj_list):
-    min_vect = find_smalles_eigenvector(A)
+    min_vect = find_smalles_eigenvector(A, n)
     p = np.argsort(min_vect)
     max_val = 0
     max_cut = []
