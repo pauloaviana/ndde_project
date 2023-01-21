@@ -61,6 +61,7 @@ class NovelTrevisanDE:
 
     def evolutionary_process(self):
         for i in range(self.number_generations):
+
             if self.best_generation != self.best_individual.evolution_generation:
                 best_individual = self.best_individual
                 list_t = best_individual.vector_gene
