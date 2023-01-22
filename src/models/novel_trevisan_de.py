@@ -49,18 +49,19 @@ class NovelTrevisanDE:
     def start_population(self):
         random_t_matrix = np.random.uniform(0, 1, (self.population_size, self.problem_size))
         for list_t in random_t_matrix:
-            cut_val, t_partition, last_significant_gene = trevisan_fitness(adj_matrix = self.adj_matrix,
+            cut_val, t_partition, last_significant_gene, new_list_t = trevisan_fitness(adj_matrix = self.adj_matrix,
                                                   adj_list = self.adj_list,
                                                   active_verts = self.active_verts,
                                                   list_t = list_t,
                                                   depth_lim=len(list_t))
-            self.population.append(NovelTrevisanIndividual(gene=list_t, partition=t_partition,
+            self.population.append(NovelTrevisanIndividual(gene=new_list_t, partition=t_partition,
                                                            fitness_value=cut_val,
                                                            last_significant_gene=last_significant_gene))
         return self.population
 
     def evolutionary_process(self):
         for i in range(self.number_generations):
+
             if self.best_generation != self.best_individual.evolution_generation:
                 best_individual = self.best_individual
                 list_t = best_individual.vector_gene
@@ -114,7 +115,7 @@ class NovelTrevisanDE:
 
     def pairwise_selection(self):
         for individual in self.population:
-            trial_cut_value, trial_partition, last_significant_gene = trevisan_fitness(adj_matrix=self.adj_matrix,
+            trial_cut_value, trial_partition, last_significant_gene, new_list_t = trevisan_fitness(adj_matrix=self.adj_matrix,
                                                     adj_list=self.adj_list,
                                                     active_verts=self.active_verts,
                                                     list_t=individual.trial_gene,
@@ -123,7 +124,7 @@ class NovelTrevisanDE:
             self.fitness_call += 1
 
             if trial_cut_value > individual.fitness:
-                individual.vector_gene = individual.trial_gene
+                individual.vector_gene = new_list_t
                 individual.fitness = trial_cut_value
                 individual.partition = trial_partition
                 individual.last_significant_gene = last_significant_gene
