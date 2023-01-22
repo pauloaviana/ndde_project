@@ -1,24 +1,48 @@
 import random as rn
+import numpy as np
 from src.models.trevisan_de import TrevisanDE
 from src.trevisan.functions import *
 
 DEPTH_LIM = 50
 
-def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, depth_lim = 1):
 
+def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_lim=1):
+
+    cut_val, A, last_significant_depth = __recursive_trevisan_fitness(adj_matrix=adj_matrix,
+                                                                      adj_list=adj_list,
+                                                                      active_verts=active_verts,
+                                                                      list_t=list_t,
+                                                                      depth=depth + 1, depth_lim=depth_lim)
+
+    if len(list_t) < last_significant_depth:
+        last_significant_depth = len(list_t)
+
+    list_t = list_t[~np.isnan(list_t)]
+    new_ts = []
+    for i in range(len(list_t), depth_lim):
+        new_ts.append(rn.uniform(0, 1))
+
+    list_t = np.append(list_t, np.array(new_ts))
+    return cut_val, A, last_significant_depth, list_t
+
+
+def __recursive_trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_lim=1):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
     y = partition(x, list_t[depth], n)
     L, R, V_prime = trevisan_cut(active_verts, n, y, log=False)
 
-    if depth+1 >= depth_lim or len(V_prime) == 0:
+    if len(L) == 0 and len(R) == 0:
+        list_t[depth] = None
+
+    if depth + 1 >= depth_lim or len(V_prime) == 0:
         A = []
-        last_significant_depth = depth+1
+        last_significant_depth = depth + 1
     else:
-        cut_val, A, last_significant_depth = trevisan_fitness(adj_matrix=induced_subgraph(adj_matrix, V_prime),
-                                                              adj_list=adj_list, active_verts=V_prime, list_t = list_t,
-                                                              depth=depth+1, depth_lim=depth_lim)
+        cut_val, A, last_significant_depth = __recursive_trevisan_fitness(adj_matrix=induced_subgraph(adj_matrix, V_prime),
+                                                              adj_list=adj_list, active_verts=V_prime, list_t=list_t,
+                                                              depth=depth + 1, depth_lim=depth_lim)
 
     AL, AR = [], []
     AL.extend(A)
@@ -29,24 +53,24 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth = 0, dept
     cut_val_1 = cut_value(adj_matrix, AL, adj_list)
     cut_val_2 = cut_value(adj_matrix, AR, adj_list)
 
+
     if cut_val_1 > cut_val_2:
         return cut_val_1, AL, last_significant_depth
     else:
         return cut_val_2, AR, last_significant_depth
 
 
-def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
-
+def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth=0):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
     de = TrevisanDE(vertices_num=n,
-                     adj_matrix=adj_matrix,
-                     adj_list=adj_list,
-                     min_aigenvector=x,
-                     population_size = 20,
-                     mutation_parameter = 0.5,
-                     number_generations = num_iter)
+                    adj_matrix=adj_matrix,
+                    adj_list=adj_list,
+                    min_aigenvector=x,
+                    population_size=20,
+                    mutation_parameter=0.5,
+                    number_generations=num_iter)
 
     de.evolutionary_process()
 
@@ -78,8 +102,7 @@ def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
         return cut_val_2, AR
 
 
-def trevisan_sato(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
-
+def trevisan_sato(adj_matrix, adj_list, active_verts, num_iter, depth=0):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
@@ -117,4 +140,3 @@ def trevisan_sato(adj_matrix, adj_list, active_verts, num_iter, depth = 0):
         return cut_val_1, AL
     else:
         return cut_val_2, AR
-

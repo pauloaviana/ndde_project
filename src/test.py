@@ -27,7 +27,7 @@ def main_evolutionary(graph):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
-    num_gen = 60
+    num_gen = 20
     mut_par = 0.50
     pop_size = 6
 
@@ -46,7 +46,7 @@ def main_evolutionary(graph):
 
 
 if __name__ == '__main__':
-    path = "../data/erdos_renyi"
+    path = "../data/max_cut"
     files = list_files(path)
     for file in files:
         graph = create_graph(path, file)
