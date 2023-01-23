@@ -2,13 +2,15 @@ import random as rn
 import numpy as np
 from src.models.trevisan_de import TrevisanDE
 from src.trevisan.functions import *
+from itertools import product
+
 
 DEPTH_LIM = 50
 
 
-def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_lim=1):
+def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_lim=1, older_R_list=[], older_L_list=[]):
 
-    cut_val, A, last_significant_depth = __recursive_trevisan_fitness(adj_matrix=adj_matrix,
+    cut_val, R, V_prime, last_significant_depth = __recursive_trevisan_fitness(adj_matrix=adj_matrix,
                                                                       adj_list=adj_list,
                                                                       active_verts=active_verts,
                                                                       list_t=list_t,
@@ -23,7 +25,26 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_
         new_ts.append(rn.uniform(0, 1))
 
     list_t = np.append(list_t, np.array(new_ts))
-    return cut_val, A, last_significant_depth, list_t
+
+    L = [node for node in active_verts if node not in R and node not in V_prime]
+
+    C = 0
+    R_list, L_list = [], []
+    R_list.extend(older_R_list)
+    L_list.extend(older_L_list)
+    R_list.extend(R)
+    L_list.extend(L)
+
+    for r in R_list:
+        edges = adj_list[r]
+        for e in edges:
+            if not (e in R_list) and not (e in V_prime):
+                C += adj_matrix[r][e]
+
+    if C > 2000 or C == 0:
+        print('here')
+
+    return C, R, L, V_prime, last_significant_depth, list_t
 
 
 def __recursive_trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_lim=1):
@@ -38,11 +59,13 @@ def __recursive_trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, dep
 
     if depth + 1 >= depth_lim or len(V_prime) == 0:
         A = []
+        V_prime_final = V_prime
         last_significant_depth = depth + 1
     else:
-        cut_val, A, last_significant_depth = __recursive_trevisan_fitness(adj_matrix=induced_subgraph(adj_matrix, V_prime),
-                                                              adj_list=adj_list, active_verts=V_prime, list_t=list_t,
-                                                              depth=depth + 1, depth_lim=depth_lim)
+        cut_val, A, V_prime_final, last_significant_depth = __recursive_trevisan_fitness(
+                                                            adj_matrix=induced_subgraph(adj_matrix, V_prime),
+                                                            adj_list=adj_list, active_verts=V_prime, list_t=list_t,
+                                                            depth=depth + 1, depth_lim=depth_lim)
 
     AL, AR = [], []
     AL.extend(A)
@@ -53,11 +76,10 @@ def __recursive_trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, dep
     cut_val_1 = cut_value(adj_matrix, AL, adj_list)
     cut_val_2 = cut_value(adj_matrix, AR, adj_list)
 
-
     if cut_val_1 > cut_val_2:
-        return cut_val_1, AL, last_significant_depth
+        return cut_val_1, AL, V_prime_final, last_significant_depth
     else:
-        return cut_val_2, AR, last_significant_depth
+        return cut_val_2, AR, V_prime_final, last_significant_depth
 
 
 def trevisan_de(adj_matrix, adj_list, active_verts, num_iter, depth=0):

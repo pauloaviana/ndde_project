@@ -1,5 +1,5 @@
 from uuid import uuid4
-from numpy import array, sin, cos, pi
+from numpy import array, sin, cos, pi, append
 
 
 class Individual:
@@ -52,12 +52,15 @@ class TrevisanIndividual:
 
 class NovelTrevisanIndividual:
 
-    def __init__(self, gene, partition, fitness_value, last_significant_gene):
+    def __init__(self, gene, partition_L, partition_R, partition_V, fitness_value, last_significant_gene):
         self.id = uuid4()
         self.fitness_history = []
 
         self.vector_gene = gene
-        self.partition = partition
+
+        self.partition_L = partition_L
+        self.partition_R = partition_R
+        self.partition_V = partition_V
 
         self.mutant_gene = array([])
         self.trial_gene = array([])
@@ -65,6 +68,22 @@ class NovelTrevisanIndividual:
         self.fitness = fitness_value
         self.evolution_generation = 1
         self.last_significant_gene = last_significant_gene
+
+        self.complete_gene = self.vector_gene
+
+    def append_gene(self, gene):
+        self.complete_gene = append(self.complete_gene, gene)
+
+    def append_partition(self, R, L, V_prime):
+        self.partition_R.extend(R)
+        self.partition_L.extend(L)
+        self.partition_V = V_prime
+
+    def append_history(self, history):
+        self.fitness_history.extend(history)
+
+    def increase_fitness(self, fitness):
+        self.fitness = fitness
 
     def to_string(self):
         return f"Gene {self.vector_gene}, Fitness = {self.fitness}"

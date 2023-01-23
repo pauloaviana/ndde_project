@@ -16,12 +16,15 @@ class NovelTrevisanDE:
                  min_aigenvector = np.array([]),
                  population_size: int = 100,
                  problem_size: int = 50,
-                 mutation_parameter: int = 0.1,
-                 crossover_probability: int = 0.1,
+                 problem_batch_size: int = 10,
+                 mutation_parameter: float = 0.1,
+                 crossover_probability: float = 0.1,
                  number_generations: int = 200,
                  mutation_cycle=3):
 
         self.adj_matrix = adj_matrix
+        self.current_adj_matrix = adj_matrix
+
         self.adj_list = adj_list
         self.active_verts = active_verts
         self.min_aigenvector = min_aigenvector
@@ -30,6 +33,8 @@ class NovelTrevisanDE:
         self.number_generations = number_generations
         self.population_size = population_size
         self.problem_size = problem_size
+        self.problem_batch_size = problem_batch_size
+        self.current_batch = 1
         self.max_fit = max_fit
         self.fitness_call = 0
         self.current_generation = 0
@@ -40,62 +45,100 @@ class NovelTrevisanDE:
         self.mutation_status = {"rand/one": [0, 0], "best/two": [0, 0], "tr_mut": [0, 0]}
         self.crossover_probability = crossover_probability
         self.population = []
+        self.batch_best_individual = None
 
+        self.population_best_individual = NovelTrevisanIndividual(gene=np.array([]),
+                                                                  partition_R=[],
+                                                                  partition_L=[],
+                                                                  partition_V=[],
+                                                                  fitness_value=0,
+                                                                  last_significant_gene=0)
         self.start_population()
         self.best_generation = 0
-        self.best_individual = max(self.population, key=lambda individual: individual.fitness)
 
+    def update_population_best_individual(self):
+
+        R = self.batch_best_individual.partition_R
+        L = self.batch_best_individual.partition_L
+        V = self.batch_best_individual.partition_V
+
+        self.population_best_individual.append_gene(self.batch_best_individual.vector_gene)
+        self.population_best_individual.append_history(self.batch_best_individual.fitness_history)
+        self.population_best_individual.append_partition(R, L, V)
+        self.population_best_individual.increase_fitness(self.batch_best_individual.fitness)
 
     def start_population(self):
-        random_t_matrix = np.random.uniform(0, 1, (self.population_size, self.problem_size))
+
+        partition_R = self.population_best_individual.partition_R
+        partition_L = self.population_best_individual.partition_L
+
+        random_t_matrix = np.random.uniform(0, 1, (self.population_size, self.problem_batch_size))
         for list_t in random_t_matrix:
-            cut_val, t_partition, last_significant_gene, new_list_t = trevisan_fitness(adj_matrix = self.adj_matrix,
-                                                  adj_list = self.adj_list,
-                                                  active_verts = self.active_verts,
-                                                  list_t = list_t,
-                                                  depth_lim=len(list_t))
-            self.population.append(NovelTrevisanIndividual(gene=new_list_t, partition=t_partition,
+
+            depth_lim = self.problem_batch_size
+            cut_val, R, L, V_prime, last_significant_gene, new_list_t = trevisan_fitness(adj_matrix=self.adj_matrix,
+                                                                                         adj_list = self.adj_list,
+                                                                                         active_verts = self.active_verts,
+                                                                                         list_t = list_t,
+                                                                                         depth_lim=depth_lim,
+                                                                                         older_R_list= partition_R,
+                                                                                         older_L_list= partition_L)
+
+
+            self.population.append(NovelTrevisanIndividual(gene=new_list_t,
+                                                           partition_R=R,
+                                                           partition_L=L,
+                                                           partition_V=V_prime,
                                                            fitness_value=cut_val,
                                                            last_significant_gene=last_significant_gene))
+
+            self.batch_best_individual = max(self.population, key=lambda individual: individual.fitness)
+
         return self.population
+
+    def check_restart_population(self):
+        if self.current_generation % self.problem_batch_size == 0:
+            self.current_batch += 1
+
+            self.update_population_best_individual()
+            self.population = []
+            self.active_verts = self.batch_best_individual.partition_V
+            self.start_population()
 
     def evolutionary_process(self):
         for i in range(self.number_generations):
-
-            if self.best_generation != self.best_individual.evolution_generation:
-                best_individual = self.best_individual
-                list_t = best_individual.vector_gene
-                y = best_individual.partition
-                k = best_individual.evolution_generation
-                cut_val = best_individual.fitness
-                lsg = best_individual.last_significant_gene
-                num_gen = self.number_generations
-                mut_par = self.mutation_parameter
-                pop_size = self.population_size
-
-                self.best_generation = k
-
-                #print(f"Generation {k} | t = {','.join(str(t) for t in list_t)}")
-                #print(f"Cut Val = {cut_val}")
-                #print(f"Partition = {y}")
-
-
             self.current_generation += 1
             self.mutation()
             self.exponential_crossover()
             self.pairwise_selection()
+            #self.check_restart_population()
 
         #TRYING TO SAVE EACH INDIVIDUAL'S FITNESS HISTORY
         pop_fit_history = []
         for individual in self.population:
             pop_fit_history.append(individual.fitness_history)
 
+        #best_individual = self.population_best_individual
+        best_individual = self.batch_best_individual
 
-        return y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history
+        R = best_individual.partition_R
+        L = best_individual.partition_L
+        V = best_individual.partition_V
+
+        k = best_individual.evolution_generation
+
+        cut_val = best_individual.fitness
+        lsg = best_individual.last_significant_gene
+
+        num_gen = self.number_generations
+        mut_par = self.mutation_parameter
+        pop_size = self.population_size
+
+        return R, L, V, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history
         
 
     def mutation(self):
-        de_best_two_trevisan(self.population, self.best_individual, self.mutation_parameter)
+        de_best_two_trevisan(self.population, self.batch_best_individual, self.mutation_parameter)
 
 
     def exponential_crossover(self):
@@ -115,18 +158,26 @@ class NovelTrevisanDE:
 
     def pairwise_selection(self):
         for individual in self.population:
-            trial_cut_value, trial_partition, last_significant_gene, new_list_t = trevisan_fitness(adj_matrix=self.adj_matrix,
-                                                    adj_list=self.adj_list,
-                                                    active_verts=self.active_verts,
-                                                    list_t=individual.trial_gene,
-                                                    depth_lim=len(individual.trial_gene))
+
+            partition_R = self.population_best_individual.partition_R
+            partition_L = self.population_best_individual.partition_L
+
+            trial_cut_value, R, L, V_prime, last_significant_gene, new_list_t = trevisan_fitness(adj_matrix=self.adj_matrix,
+                                                                                                 adj_list=self.adj_list,
+                                                                                                 active_verts=self.active_verts,
+                                                                                                 list_t=individual.trial_gene,
+                                                                                                 depth_lim=len(individual.trial_gene),
+                                                                                                 older_R_list=partition_R,
+                                                                                                 older_L_list=partition_L)
 
             self.fitness_call += 1
 
             if trial_cut_value > individual.fitness:
                 individual.vector_gene = new_list_t
                 individual.fitness = trial_cut_value
-                individual.partition = trial_partition
+                individual.partition_R = R
+                individual.partition_L = L
+                individual.partition_V = V_prime
                 individual.last_significant_gene = last_significant_gene
                 individual.evolution_generation = self.current_generation
 
@@ -136,5 +187,5 @@ class NovelTrevisanDE:
             individual.trial_gene = np.array([])
 
         best_generation = max(self.population, key=lambda ind: ind.fitness)
-        if best_generation.id != self.best_individual.id:
-            self.best_individual = best_generation
+        if best_generation.id != self.batch_best_individual.id:
+            self.batch_best_individual = best_generation

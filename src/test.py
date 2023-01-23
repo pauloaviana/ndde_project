@@ -10,12 +10,44 @@ import time
 df = pd.DataFrame()
 run_time = []
 cuts = []
-best_part = []
+best_R = []
+best_L = []
+best_V = []
 gens = []
 graph_name = []
 num_edges = []
 num_vertices = []
 depth = []
+
+
+def main_iterative_evolutionary(graph):
+    adj_matrix = nx.adjacency_matrix(graph).toarray()
+    adj_list = get_adj_list(adj_matrix)
+    active_vertices = [i for i in range(len(adj_matrix))]
+
+    n = len(adj_matrix)
+    x = find_smalles_eigenvector(adj_matrix, n)
+
+    num_gen = 40
+    mut_par = 0.50
+    pop_size = 6
+
+    problem_size = 40
+    problem_partition_size = 10
+
+    de = NovelTrevisanDE(vertices_num=n,
+                         active_verts=active_vertices,
+                         adj_matrix=adj_matrix,
+                         adj_list=adj_list,
+                         min_aigenvector=x,
+                         population_size=pop_size,
+                         problem_size=problem_size,
+                         problem_batch_size=problem_partition_size,
+                         mutation_parameter=mut_par,
+                         number_generations=num_gen)
+
+    R, L, V, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = de.evolutionary_process()
+    return R, L, V, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history
 
 
 def main_evolutionary(graph):
@@ -27,7 +59,7 @@ def main_evolutionary(graph):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
-    num_gen = 20
+    num_gen = 60
     mut_par = 0.50
     pop_size = 6
 
@@ -53,7 +85,7 @@ if __name__ == '__main__':
         print(f"[Working with Graph: {file}]\n")
 
         start_cpu_time = time.process_time()
-        y, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = main_evolutionary(graph)
+        R, L, V, cut_val, k, lsg, num_gen, mut_par, pop_size, pop_fit_history = main_iterative_evolutionary(graph)
         end_cpu_time = time.process_time()
 
         clock = end_cpu_time - start_cpu_time
@@ -63,8 +95,14 @@ if __name__ == '__main__':
         cuts.append(cut_val)
         print(f"Number of Cuts = {cut_val}")
 
-        best_part.append(y)
-        print(f"Best Partition = {y}")
+        best_R.append(R)
+        print(f"Partition R = {R}")
+
+        best_L.append(L)
+        print(f"Partition L = {L}")
+
+        best_V.append(V)
+        print(f"Partition V = {V}")
 
         gens.append(k)
         print(f"Generations = {k}")
@@ -83,7 +121,9 @@ if __name__ == '__main__':
 
     df['graph'] = graph_name
     df['cuts'] = cuts
-    df['best_partition'] = best_part
+    df['best_R'] = best_R
+    df['best_L'] = best_L
+    df['best_V'] = best_V
     df['generations'] = gens
     df['vertices'] = num_vertices
     df['edges'] = num_edges
@@ -95,4 +135,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_csv("../statistics/csv_files/data_0.csv")
+    df.to_csv("../statistics/csv_files/data_icaro_V2.csv")
