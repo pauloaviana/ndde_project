@@ -14,7 +14,7 @@ def evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs):
     best_list = []
     pop_list = []
 
-    for i in range(2):
+    for i in range(1):
         de = NovelTrevisanDE(vertices_num=n,
                              active_verts=active_vertices,
                              adj_matrix=adj_matrix,
@@ -120,7 +120,7 @@ def grid_search(graph):
 
         new_df = pd.DataFrame(kwargs, index=[1])
         new_df = new_df.set_index(index_list)
-        results_df.append(new_df)
+        results_df = results_df.append(new_df)
 
     results_df.to_csv("../statistics/csv_files/grid_search_icaro_V2.csv")
 
