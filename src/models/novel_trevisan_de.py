@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.utils.mutation import *
 from src.trevisan.functions import *
 from src.trevisan.algorithms import trevisan_fitness
@@ -56,6 +58,16 @@ class NovelTrevisanDE:
         self.start_population()
         self.best_generation = 0
 
+        self.fitness_best_history = []
+        self.fitness_median_history = []
+        self.update_history()
+
+    def update_history(self):
+
+        median_fitness = np.median(np.array([ind.fitness for ind in self.population]))
+        self.fitness_best_history.append(self.batch_best_individual.fitness)
+        self.fitness_median_history.append(median_fitness)
+
     def update_population_best_individual(self):
 
         R = self.batch_best_individual.partition_R
@@ -112,6 +124,7 @@ class NovelTrevisanDE:
             self.exponential_crossover()
             self.pairwise_selection()
             #self.check_restart_population()
+            self.update_history()
 
         #TRYING TO SAVE EACH INDIVIDUAL'S FITNESS HISTORY
         pop_fit_history = []

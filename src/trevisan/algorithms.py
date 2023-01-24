@@ -28,7 +28,8 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_
 
     L = [node for node in active_verts if node not in R and node not in V_prime]
 
-    C = 0
+    C_R = 0
+    C_L = 0
     R_list, L_list = [], []
     R_list.extend(older_R_list)
     L_list.extend(older_L_list)
@@ -38,12 +39,16 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_
     for r in R_list:
         edges = adj_list[r]
         for e in edges:
-            if not (e in R_list) and not (e in V_prime):
-                C += adj_matrix[r][e]
+            if not (e in R_list):
+                C_R += adj_matrix[r][e]
 
-    if C > 2000 or C == 0:
-        print('here')
+    for l in L_list:
+        edges = adj_list[r]
+        for e in edges:
+            if not (l in L_list):
+                C_L += adj_matrix[r][e]
 
+    C = max([C_R, C_L])
     return C, R, L, V_prime, last_significant_depth, list_t
 
 

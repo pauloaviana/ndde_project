@@ -80,6 +80,11 @@ def main_evolutionary(graph):
 if __name__ == '__main__':
     path = "../data/max_cut"
     files = list_files(path)
+
+    mutation_rates = []
+    population_size = []
+
+
     for file in files:
         graph = create_graph(path, file)
         print(f"[Working with Graph: {file}]\n")
