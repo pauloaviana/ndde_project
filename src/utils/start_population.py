@@ -1,7 +1,21 @@
 from trevisan.algorithms import trevisan_fitness
 from trevisan.functions import partition, calculate_fitness_parameters
-from models.population import NovelTrevisanIndividual, TrevisanIndividual
+from utils.fitness import max_cut_fitness
+from models.population import NovelTrevisanIndividual, TrevisanIndividual, MaxCutIndividual
 import numpy as np
+
+
+def binary_max_cut_init(population_size, problem_size, adj_matrix, adj_list):
+
+    population = []
+    for i in range(population_size):
+        real_gene = np.random.uniform(0, 1, problem_size)
+
+        individual = MaxCutIndividual(real_gene)
+        individual.fitness = max_cut_fitness(individual.integer_gene, adj_matrix, adj_list)
+        population.append(individual)
+
+    return population
 
 
 def random_novel_trevisan_init(population_size, problem_size, adj_matrix, adj_list, active_verts):

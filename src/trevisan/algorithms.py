@@ -19,12 +19,12 @@ def trevisan_fitness(adj_matrix, adj_list, active_verts, list_t, depth=0, depth_
     if len(list_t) < last_significant_depth:
         last_significant_depth = len(list_t)
 
-    list_t = list_t[~np.isnan(list_t)]
-    new_ts = []
-    for i in range(len(list_t), depth_lim):
-        new_ts.append(rn.uniform(0, 1))
-
-    list_t = np.append(list_t, np.array(new_ts))
+    # list_t = list_t[~np.isnan(list_t)]
+    # new_ts = []
+    # for i in range(len(list_t), depth_lim):
+    #     new_ts.append(rn.uniform(0, 1))
+    #
+    # list_t = np.append(list_t, np.array(new_ts))
 
     L = [node for node in active_verts if node not in R and node not in V_prime]
 

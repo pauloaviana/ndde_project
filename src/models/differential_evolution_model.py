@@ -1,4 +1,5 @@
 import inspect
+import numpy as np
 
 
 class DEModel:
@@ -25,6 +26,8 @@ class DEModel:
 
         self.start_population()
         self.params['best_individual'] = max(self.population, key=lambda individual: individual.fitness)
+        self.fitness_history = [self.params['best_individual'].fitness]
+        self.fitness_avg_history = [np.median(np.array([ind.fitness for ind in self.population]))]
 
     def __getattr__(self, item):
         return self.params[item]
@@ -42,15 +45,20 @@ class DEModel:
 
     def mutation(self):
         mutation_params = self.__get_params(self.mutation_function)
-        self.params['population'] = self.mutation_function(**mutation_params)
+        self.params['mutant_population'] = self.mutation_function(**mutation_params)
 
     def crossover(self):
         crossover_params = self.__get_params(self.crossover_function)
-        self.params['population'] = self.crossover_function(**crossover_params)
+        self.params['trial_population'] = self.crossover_function(**crossover_params)
 
     def selection(self):
         selection_params = self.__get_params(self.selection_function)
-        self.params['best_individual'] = self.selection_function(**selection_params)
+        self.params['population'] = self.selection_function(**selection_params)
+        self.params['best_individual'] = max(self.population, key=lambda individual: individual.fitness)
+        self.params['mutant_population'] = []
+        self.params['trial_population'] = []
+        self.fitness_history.append(self.params['best_individual'].fitness)
+        self.fitness_avg_history.append(np.median(np.array([ind.fitness for ind in self.population])))
 
     def check_stop_condition(self):
         stop_condition_params = self.__get_params(self.stop_condition)

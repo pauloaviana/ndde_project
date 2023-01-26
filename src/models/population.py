@@ -28,6 +28,22 @@ class Individual:
         return f"Gene {self.gene_to_string()}, Fitness = {self.fitness}"
 
 
+class MaxCutIndividual:
+
+    def __init__(self, real_gene=None):
+        self.id = uuid4()
+
+        self.real_gene = real_gene
+        self.map_real_to_integer()
+
+    def map_real_to_integer(self):
+        self.integer_gene = [0 if bit < 0.5 else 1 for bit in self.real_gene]
+
+    def update_gene(self, new_gene):
+        self.real_gene = new_gene
+        self.map_real_to_integer()
+
+
 class TrevisanIndividual:
 
     def __init__(self, real_gene, partition, fitness_value):

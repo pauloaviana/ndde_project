@@ -2,6 +2,22 @@ from trevisan.algorithms import trevisan_fitness
 import numpy as np
 
 
+def max_cut_selection(population, trial_population):
+
+    new_population = []
+
+    for i in range(len(population)):
+        trial_ind = trial_population[i]
+        target_ind = population[i]
+
+        if trial_ind.fitness > target_ind.fitness:
+            new_population.append(trial_ind)
+        else:
+            new_population.append(target_ind)
+
+    return new_population
+
+
 def pair_wise_selection(population, best_individual, current_generation, adj_matrix, adj_list, active_verts):
 
     for individual in population:

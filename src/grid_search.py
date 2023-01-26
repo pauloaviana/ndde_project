@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import networkx as nx
 from src.models.novel_trevisan_de import NovelTrevisanDE
@@ -13,6 +14,7 @@ def evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs):
 
     best_list = []
     pop_list = []
+    v_size_list = []
 
     for i in range(1):
         de = NovelTrevisanDE(vertices_num=n,
@@ -29,11 +31,16 @@ def evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs):
         de.evolutionary_process()
         best_list.append(de.fitness_best_history)
         pop_list.append(de.fitness_median_history)
+        v_size_list.append(de.v_size_history)
 
     median_best = np.median(np.array(best_list), axis=0)
     median_pop = np.median(np.array(pop_list), axis=0)
+    median_v_size = np.median(np.array(v_size_list), axis=0)
 
-    return median_best, median_pop
+    print(median_best)
+    print(median_pop)
+    print(median_v_size)
+    return median_best, median_pop, median_v_size
 
 
 def grid_search(graph):
@@ -68,7 +75,7 @@ def grid_search(graph):
             }
 
             print(f"... Testing {parameter_type} - {kwargs[key]}")
-            median_best, median_pop = evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs)
+            median_best, median_pop, _ = evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs)
             size = len(median_best)-1
             print(f"{parameter_type} - {kwargs[key]}: | Best median fitness: {median_best[size]} | Population Median fitness: {median_pop[size]}")
             results[kwargs[key]] = median_best[size]
@@ -110,7 +117,7 @@ def grid_search(graph):
 
         print(f"Testing parameters: {prob_size} | {num_gen} | {cross_par} | {mut_par} | {cross_par}...")
 
-        median_best, median_pop = evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs)
+        median_best, median_pop, _ = evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs)
 
         size = len(median_best) - 1
         print(f"...Results = Best median fitness: {median_best[size]} | Population Median fitness: {median_pop[size]}")
@@ -126,8 +133,44 @@ def grid_search(graph):
 
 
 
+def search(graph):
+    adj_matrix = nx.adjacency_matrix(graph).toarray()
+    adj_list = get_adj_list(adj_matrix)
+    active_vertices = [i for i in range(len(adj_matrix))]
+
+    n = len(adj_matrix)
+    x = find_smalles_eigenvector(adj_matrix, n)
+    index_list = ['pop_size', 'num_gen', 'mut_par', 'cross_par', 'prob_size']
+    results_df = pd.DataFrame()
+
+    PROBLEM_SIZES = [15, 20, 25, 30, 35]
+    for pop_size in PROBLEM_SIZES:
+        kwargs = {
+            'prob_size': pop_size,
+            'pop_size': 15,
+            'num_gen': 800,
+            'mut_par': 2.3,
+            'cross_par': 0.4
+        }
+
+        median_best, median_pop, median_v = evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs)
+
+        size = len(median_best) - 1
+        print(f"...Results = Best median fitness: {median_best[size]} | Population Median fitness: {median_pop[size]} | V-prime size: {median_v[size]}")
+
+        for i in range(len(median_best)):
+            kwargs[str(i)] = median_best[i]
+
+        new_df = pd.DataFrame(kwargs, index=[1])
+        new_df = new_df.set_index(index_list)
+        results_df = results_df.append(new_df)
+    results_df.to_csv("../statistics/csv_files/search_icaro_V3.csv")
+
+
 if __name__ == '__main__':
     path = "../data/max_cut"
     file = "g05_60_0.csv"
     graph = create_graph(path, file)
-    grid_search(graph)
+    search(graph)
+
+
