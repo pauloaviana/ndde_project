@@ -16,7 +16,7 @@ def evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs):
     pop_list = []
     v_size_list = []
 
-    for i in range(1):
+    for i in range(5):
         de = NovelTrevisanDE(vertices_num=n,
                              active_verts=active_vertices,
                              adj_matrix=adj_matrix,

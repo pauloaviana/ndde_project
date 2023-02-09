@@ -27,7 +27,7 @@ class DEModel:
         self.start_population()
         self.params['best_individual'] = max(self.population, key=lambda individual: individual.fitness)
         self.fitness_history = [self.params['best_individual'].fitness]
-        self.fitness_avg_history = [np.median(np.array([ind.fitness for ind in self.population]))]
+        self.median_fitness_history = [np.median(np.array([ind.fitness for ind in self.population]))]
 
     def __getattr__(self, item):
         return self.params[item]
@@ -58,7 +58,7 @@ class DEModel:
         self.params['mutant_population'] = []
         self.params['trial_population'] = []
         self.fitness_history.append(self.params['best_individual'].fitness)
-        self.fitness_avg_history.append(np.median(np.array([ind.fitness for ind in self.population])))
+        self.median_fitness_history.append(np.median(np.array([ind.fitness for ind in self.population])))
 
     def check_stop_condition(self):
         stop_condition_params = self.__get_params(self.stop_condition)

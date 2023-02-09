@@ -28,9 +28,9 @@ def main_iterative_evolutionary(graph):
     n = len(adj_matrix)
     x = find_smalles_eigenvector(adj_matrix, n)
 
-    num_gen = 40
-    mut_par = 0.50
-    pop_size = 6
+    num_gen = 50
+    mut_par = 1.2
+    pop_size = 10
 
     problem_size = 40
     problem_partition_size = 10
@@ -140,4 +140,4 @@ if __name__ == '__main__':
 
     df.head()
 
-    df.to_csv("../statistics/csv_files/data_icaro_V2.csv")
+    df.to_csv("../statistics/csv_files/data_iterative_evolutionary.csv")
