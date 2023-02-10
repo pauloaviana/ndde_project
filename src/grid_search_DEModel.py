@@ -161,11 +161,11 @@ def grid_search(graph):
     results_df['median history'] = clmn_3
     results_df['median pop history'] = clmn_4
 
-    results_df.to_csv("../statistics/csv_files/grid_DEModel_er_100_200_3.csv")
+    results_df.to_csv("../statistics/csv_files/grid_DEModel_er_80_200_3.csv")
 
 if __name__ == '__main__':
     path = "../data/erdos_renyi"
-    file = "er_100_200_3.csv"
+    file = "er_80_200_3.csv"
     graph = create_graph(path, file)
     grid_search(graph)
 
