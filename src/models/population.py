@@ -1,5 +1,18 @@
 from uuid import uuid4
+
+import numpy as np
 from numpy import array, sin, cos, pi, append
+
+
+def normalize(arr, t_min=0, t_max=1):
+    return arr
+    norm_arr = []
+    diff = t_max - t_min
+    diff_arr = max(arr) - min(arr)
+    for i in arr:
+        temp = (((i - min(arr))*diff)/diff_arr) + t_min
+        norm_arr.append(temp)
+    return np.array(norm_arr)
 
 
 class Individual:
@@ -33,14 +46,16 @@ class MaxCutIndividual:
     def __init__(self, real_gene=None):
         self.id = uuid4()
 
-        self.real_gene = real_gene
+        self.real_gene = normalize(real_gene)
+        self.median_hamming_distance = 0
+        self.list_hamming_distance = np.array([])
         self.map_real_to_integer()
 
     def map_real_to_integer(self):
         self.integer_gene = [0 if bit < 0.5 else 1 for bit in self.real_gene]
 
     def update_gene(self, new_gene):
-        self.real_gene = new_gene
+        self.real_gene = normalize(new_gene)
         self.map_real_to_integer()
 
 

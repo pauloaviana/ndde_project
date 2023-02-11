@@ -1,5 +1,67 @@
 from trevisan.algorithms import trevisan_fitness
+from models.population import MaxCutIndividual
+from utils.fitness import max_cut_fitness
 import numpy as np
+
+
+def hamming_distance(first_gene: str, second_gene: str) -> int:
+    dist_counter = 0
+    for n in range(len(first_gene)):
+        if first_gene[n] != second_gene[n]:
+            dist_counter += 1
+    return dist_counter
+
+
+def __max_cut_filter_redundant_population(new_population, limit_removed):
+    filtered_population = []
+    for i in range(len(new_population)):
+        ind = new_population[i]
+        equal_individuals = np.where(ind.list_hamming_distance == 0)[0].tolist()
+        equal_individuals = list(filter(lambda x: x > i, equal_individuals)) #take only the next individuals
+        filtered_population.extend(equal_individuals)
+
+    size = len(filtered_population)
+    if size == 0:
+        return new_population
+    elif size > limit_removed:
+        filtered_population = filtered_population[size-limit_removed:]
+
+    return np.delete(new_population, np.array(filtered_population)).tolist()
+
+
+def max_cut_hamming_selection(population, trial_population, current_generation, adj_matrix, adj_list, diversity_rate):
+    new_population = max_cut_selection(population, trial_population)
+    new_population.sort(key=lambda x: x.fitness)
+
+    for ind in new_population:
+        distances = np.array([hamming_distance(ind.integer_gene, other.integer_gene) for other in new_population])
+        ind.list_hamming_distance = distances
+        ind.median_hamming_distance = np.median(distances)
+
+    if current_generation % 10 == 9:
+        limit_removed = round(len(new_population) * diversity_rate)
+        if limit_removed == 0:
+            return new_population
+
+        new_population = __max_cut_filter_redundant_population(new_population, limit_removed)
+        old_size, new_size = len(population), len(new_population)
+        if old_size != new_size:
+            problem_size = len(new_population[0].real_gene)
+            for i in range(old_size-new_size):
+                real_gene = np.random.uniform(0, 1, problem_size)
+
+                individual = MaxCutIndividual(real_gene)
+                individual.fitness = max_cut_fitness(individual.integer_gene, adj_matrix, adj_list)
+                new_population.append(individual)
+
+            for ind in new_population:
+                distances = np.array([hamming_distance(ind.integer_gene, other.integer_gene) for other in population])
+                ind.list_hamming_distance = distances
+                ind.median_hamming_distance = np.median(distances)
+
+            avg = int(np.median(np.array([ind.median_hamming_distance for ind in new_population])))
+
+    return new_population
 
 
 def max_cut_selection(population, trial_population):

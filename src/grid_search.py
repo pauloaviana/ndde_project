@@ -37,9 +37,6 @@ def evolutionary_process(adj_matrix, adj_list, active_vertices, x, **kwargs):
     median_pop = np.median(np.array(pop_list), axis=0)
     median_v_size = np.median(np.array(v_size_list), axis=0)
 
-    print(median_best)
-    print(median_pop)
-    print(median_v_size)
     return median_best, median_pop, median_v_size
 
 
@@ -171,6 +168,6 @@ if __name__ == '__main__':
     path = "../data/max_cut"
     file = "g05_60_0.csv"
     graph = create_graph(path, file)
-    search(graph)
+    grid_search(graph)
 
 

@@ -28,6 +28,8 @@ class DEModel:
         self.params['best_individual'] = max(self.population, key=lambda individual: individual.fitness)
         self.fitness_history = [self.params['best_individual'].fitness]
         self.fitness_avg_history = [np.median(np.array([ind.fitness for ind in self.population]))]
+        self.diversity_history = []
+        self.diversity_avg_history = []
 
     def __getattr__(self, item):
         return self.params[item]
@@ -58,7 +60,11 @@ class DEModel:
         self.params['mutant_population'] = []
         self.params['trial_population'] = []
         self.fitness_history.append(self.params['best_individual'].fitness)
-        self.fitness_avg_history.append(np.median(np.array([ind.fitness for ind in self.population])))
+        self.fitness_avg_history.append(int(np.median(np.array([ind.fitness for ind in self.population]))))
+        self.diversity_history.append(int(self.params['best_individual'].median_hamming_distance))
+        self.diversity_avg_history.append(int(np.median(np.array([ind.median_hamming_distance for ind in self.population]))))
+        #if self.diversity_history[self.current_generation-2] - self.diversity_history[self.current_generation-1] > 50:
+        #    print('here')
 
     def check_stop_condition(self):
         stop_condition_params = self.__get_params(self.stop_condition)
