@@ -122,4 +122,4 @@ if __name__ == '__main__':
     file = "g05_100_0.csv"
     graph = create_graph(path, file)
     df = main_max_cut_evolutionary(graph)
-    df.to_csv("../statistics/csv_files/hamming_icaro_no_norm.csv")
+    df.to_csv("../statistics/csv_files/hamming_icaro.csv")

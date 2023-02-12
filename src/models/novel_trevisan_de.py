@@ -72,8 +72,8 @@ class NovelTrevisanDE:
 
         print(f"Generation {self.current_generation}")
         print(f"Best Fitness {self.batch_best_individual.fitness}")
-        print(f"Median Fitness {median_fitness}")
-        print(f"Best V Prime Size {len(self.batch_best_individual.partition_V)}")
+        #print(f"Median Fitness {median_fitness}")
+        #print(f"Best V Prime Size {len(self.batch_best_individual.partition_V)}")
 
     def update_population_best_individual(self):
 
@@ -130,7 +130,7 @@ class NovelTrevisanDE:
             self.mutation()
             self.exponential_crossover()
             self.pairwise_selection()
-            #self.check_restart_population()
+            self.check_restart_population()
             self.update_history()
 
         #TRYING TO SAVE EACH INDIVIDUAL'S FITNESS HISTORY
@@ -163,18 +163,17 @@ class NovelTrevisanDE:
 
     def exponential_crossover(self):
         for individual in self.population:
-            # random_cut = np.random.randint(0, individual.last_significant_gene)
-            # trial_vector = []
-            # for i in range(0, random_cut):
-            #     rand = np.random.randint(0, 2)
-            #     if rand == 0:
-            #         trial_vector.append(individual.vector_gene[i])
-            #     elif rand == 1:
-            #         trial_vector.append(individual.mutant_gene[i])
-            #
-            # trial_vector.extend(individual.vector_gene[random_cut:])
-            #individual.trial_gene = np.array(trial_vector)
-            individual.trial_gene = individual.mutant_gene
+             random_cut = np.random.randint(0, individual.last_significant_gene)
+             trial_vector = []
+             for i in range(0, random_cut):
+                 rand = np.random.randint(0, 2)
+                 if rand == 0:
+                     trial_vector.append(individual.vector_gene[i])
+                 elif rand == 1:
+                     trial_vector.append(individual.mutant_gene[i])
+        trial_vector.extend(individual.vector_gene[random_cut:])
+        individual.trial_gene = np.array(trial_vector)
+        individual.trial_gene = individual.mutant_gene
 
     def pairwise_selection(self):
         for individual in self.population:

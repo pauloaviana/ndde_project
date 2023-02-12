@@ -1,6 +1,6 @@
 import pandas as pd
 import networkx as nx
-import tsplib95
+#import tsplib95
 
 
 def __create_graph_from_tsp_file(path, filename):
