@@ -1,0 +1,3 @@
+DEModel = v1
+DEModelv2 = Add selection criteria to prevent copies
+DEModelv2.1 = Saving the hamming distance on grid search

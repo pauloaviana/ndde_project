@@ -1,6 +1,6 @@
-from trevisan.algorithms import trevisan_fitness
-from models.population import MaxCutIndividual
-from utils.fitness import max_cut_fitness
+from src.trevisan.algorithms import trevisan_fitness
+from src.models.population import MaxCutIndividual
+from src.utils.fitness import max_cut_fitness
 import numpy as np
 
 
@@ -72,7 +72,7 @@ def max_cut_selection(population, trial_population):
         trial_ind = trial_population[i]
         target_ind = population[i]
 
-        if trial_ind.fitness > target_ind.fitness:
+        if trial_ind.fitness > target_ind.fitness and trial_ind not in population:
             new_population.append(trial_ind)
         else:
             new_population.append(target_ind)

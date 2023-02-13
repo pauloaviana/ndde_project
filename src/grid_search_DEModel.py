@@ -42,8 +42,8 @@ def main_max_cut_evolutionary(adj_matrix,adj_list,**kwargs):
 
         best_ind = de.best_individual # Fitness of the best individual
         best_ind_history = de.fitness_history # History of fitness of best individual
-        median_pop_history = de.median_fitness_history # History of median of population's fitness
-        median_pop_hamming_distance = ''
+        median_pop_history = de.fitness_avg_history # History of median of population's fitness
+        median_pop_hamming_distance = de.diversity_avg_history
 
         # Appending results to the data matrix:
 
@@ -59,7 +59,7 @@ def main_max_cut_evolutionary(adj_matrix,adj_list,**kwargs):
     median_best_pop_history = median_history_list[indx]
     median_best_hd = hamming_distance_list[indx]
 
-    return median_best_fitness, best_list, median_best_history, median_best_pop_history
+    return median_best_fitness, best_list, median_best_history, median_best_pop_history, median_best_hd
 
 
 def grid_search(graph):
@@ -87,7 +87,7 @@ def grid_search(graph):
             }
 
             print(f"... Testing {parameter_type} - {kwargs[key]}")
-            median_best, best_list, median_best_history, median_best_pop_history = main_max_cut_evolutionary(adj_matrix,adj_list, **kwargs)
+            median_best, best_list, median_best_history, median_best_pop_history, median_best_hd = main_max_cut_evolutionary(adj_matrix,adj_list, **kwargs)
             print(f"{parameter_type} - {kwargs[key]}: | Best median fitness: {median_best} | List of best fitness: {best_list}")
             results[kwargs[key]] = median_best
 
@@ -121,6 +121,7 @@ def grid_search(graph):
     clmn_2 = []
     clmn_3 = []
     clmn_4 = []
+    clmn_5 = []
 
 
     for pop_size, num_gen, cross_par, mut_par in list(product(*best_params)):
@@ -133,12 +134,13 @@ def grid_search(graph):
 
         print(f"Testing parameters: | {num_gen} | {cross_par} | {mut_par} | {cross_par} |")
 
-        median_best, best_list, median_best_history, median_best_pop_history = main_max_cut_evolutionary(adj_matrix, adj_list, **kwargs)
+        median_best, best_list, median_best_history, median_best_pop_history, median_best_hd = main_max_cut_evolutionary(adj_matrix, adj_list, **kwargs)
         print(f"...Results = Best median fitness: {median_best} | List of best fitness: {best_list}")
 
         print('median best: ', median_best)
         print('best list: ', best_list)
         print('median_best_history: ', median_best_history)
+        print('median_best_hd_history: ', median_best_hd)
         print('median_best_pop_history: ', median_best_pop_history)
 
         p_list = [pop_size, num_gen, cross_par, mut_par]
@@ -147,6 +149,7 @@ def grid_search(graph):
         clmn_2.append(best_list)
         clmn_3.append(median_best_history)
         clmn_4.append(median_best_pop_history)
+        clmn_5.append(median_best_hd)
 
         '''for i in range(len(median_best)):
             kwargs[str(i)] = median_best[i]'''
@@ -160,12 +163,13 @@ def grid_search(graph):
     results_df['best list'] = clmn_2
     results_df['median history'] = clmn_3
     results_df['median pop history'] = clmn_4
+    results_df['median hd history'] = clmn_5
 
-    results_df.to_csv("../statistics/csv_files/grid_DEModel_er_80_200_3.csv")
+    results_df.to_csv("../statistics/csv_files/grid_DEModelv2.1_mxct_60_0.csv")
 
 if __name__ == '__main__':
-    path = "../data/erdos_renyi"
-    file = "er_80_200_3.csv"
+    path = "../data/max_cut"
+    file = "g05_60_0.csv"
     graph = create_graph(path, file)
     grid_search(graph)
 
