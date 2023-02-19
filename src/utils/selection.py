@@ -66,15 +66,24 @@ def max_cut_hamming_selection(population, trial_population, current_generation, 
 
 def max_cut_selection(population, trial_population):
 
+    def check_repeated(individual):
+        for p in population:
+            if individual.integer_gene == p.integer_gene:
+                return True
+        return False
+
     new_population = []
 
     for i in range(len(population)):
         trial_ind = trial_population[i]
         target_ind = population[i]
 
-        if trial_ind.fitness > target_ind.fitness and trial_ind not in population:
+        if trial_ind.fitness > target_ind.fitness and not check_repeated(trial_ind):
+            trial_ind.mutation_list = target_ind.mutation_list
+            trial_ind.active_mutation = target_ind.active_mutation
             new_population.append(trial_ind)
         else:
+            target_ind.age += 1
             new_population.append(target_ind)
 
     return new_population

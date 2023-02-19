@@ -37,24 +37,42 @@ def trigonometric_mutation(r1: Individual, r2: Individual, r3: Individual) -> np
 
 def mc_de_rand_one(population: List[MaxCutIndividual], mutation_rate_f: float, adj_matrix, adj_list):
 
-    mutant_population = []
+    rng = np.random.default_rng()
+    indexes = rng.choice(len(population), size=3, replace=False)
+    r1 = population[indexes[0]]
+    r2 = population[indexes[1]]
+    r3 = population[indexes[2]]
 
-    for i in range(len(population)):
-        rng = np.random.default_rng()
-        indexes = rng.choice(len(population), size=3, replace=False)
-        r1 = population[indexes[0]]
-        r2 = population[indexes[1]]
-        r3 = population[indexes[2]]
+    vector_r1 = r1.real_gene
+    vector_r2 = r2.real_gene
+    vector_r3 = r3.real_gene
+    mutant_gene = vector_r1 + mutation_rate_f * (vector_r2 - vector_r3)
+    mutant_individual = MaxCutIndividual(real_gene=mutant_gene)
+    mutant_individual.fitness = max_cut_fitness(mutant_individual.integer_gene, adj_matrix, adj_list)
+    return mutant_individual
 
-        vector_r1 = r1.real_gene
-        vector_r2 = r2.real_gene
-        vector_r3 = r3.real_gene
-        mutant_gene = vector_r1 + mutation_rate_f * (vector_r2 - vector_r3)
-        mutant_individual = MaxCutIndividual(real_gene=mutant_gene)
-        mutant_individual.fitness = max_cut_fitness(mutant_individual.integer_gene, adj_matrix, adj_list)
-        mutant_population.append(mutant_individual)
 
-    return mutant_population
+def mc_de_best_two(best_individual: MaxCutIndividual, population: List[MaxCutIndividual], mutation_rate_f: float, adj_matrix, adj_list):
+    rng = np.random.default_rng()
+    indexes = rng.choice(len(population), size=4, replace=False)
+
+    r1 = population[indexes[0]]
+    r2 = population[indexes[1]]
+    r3 = population[indexes[2]]
+    r4 = population[indexes[3]]
+
+    vector_best = best_individual.real_gene
+    vector_r1 = r1.real_gene
+    vector_r2 = r2.real_gene
+    vector_r3 = r3.real_gene
+    vector_r4 = r4.real_gene
+    mutant_gene = vector_best + (mutation_rate_f * (vector_r1 - vector_r2))
+    mutant_gene += mutation_rate_f * (vector_r3 - vector_r4)
+
+    mutant_individual = MaxCutIndividual(real_gene=mutant_gene)
+    mutant_individual.fitness = max_cut_fitness(mutant_individual.integer_gene, adj_matrix, adj_list)
+
+    return mutant_individual
 
 
 def de_rand_one(population: List[Individual], mutation_rate_f: float):

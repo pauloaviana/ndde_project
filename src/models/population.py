@@ -5,7 +5,6 @@ from numpy import array, sin, cos, pi, append
 
 
 def normalize(arr, t_min=0, t_max=1):
-    return arr
     norm_arr = []
     diff = t_max - t_min
     diff_arr = max(arr) - min(arr)
@@ -43,13 +42,31 @@ class Individual:
 
 class MaxCutIndividual:
 
-    def __init__(self, real_gene=None):
+    def __init__(self, real_gene=None, mutation_list=None):
         self.id = uuid4()
 
         self.real_gene = normalize(real_gene)
         self.median_hamming_distance = 0
         self.list_hamming_distance = np.array([])
+        if mutation_list:
+            self.mutation_list = mutation_list
+            self.active_mutation = np.random.randint(0, len(mutation_list))
+        else:
+            self.mutation_list = []
+            self.active_mutation = -1
+
+        self.age = 1
         self.map_real_to_integer()
+
+    def get_mutation(self):
+        if self.age % 5 == 4:
+            self.active_mutation += 1
+            if self.active_mutation == len(self.mutation_list):
+                self.active_mutation = 0
+        try:
+            return self.mutation_list[self.active_mutation]
+        except:
+            return None
 
     def map_real_to_integer(self):
         self.integer_gene = [0 if bit < 0.5 else 1 for bit in self.real_gene]

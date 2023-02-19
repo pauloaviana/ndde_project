@@ -5,7 +5,7 @@ import pandas as pd
 from src.trevisan.algorithms import *
 from src.models.differential_evolution_model import DEModel
 from src.utils.selection import pair_wise_selection, max_cut_selection, max_cut_hamming_selection
-from src.utils.mutation import de_best_two_trevisan, mc_de_rand_one
+from src.utils.mutation import de_best_two_trevisan, mc_de_rand_one, mc_de_best_two
 from src.utils.crossover import exponential_crossover, mc_binomial_crossover
 from src.utils.start_population import random_novel_trevisan_init, binary_max_cut_init
 from src.utils.ending import limit_generations
@@ -18,23 +18,24 @@ def main_max_cut_evolutionary(graph):
 
     n = len(adj_matrix)
 
-    num_gen = 100
+    num_gen = 150
     mut_par = 1.0
     cross_rate = 0.3
-    pop_size = 50
-    diversity_rates = [0.0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5]
+    pop_size = 80
+    mutations = ([mc_de_rand_one], [mc_de_best_two], [mc_de_rand_one,mc_de_best_two])
 
     dic_results = {}
 
-    for diversity_rate in diversity_rates:
+    for mutation_list in mutations:
         fitness_list = []
+        mutation_names = ''.join(mutation.__name__ for mutation in mutation_list)
 
-        for i in range(5):
-            print(f"====== Diversity Rate {diversity_rate} | Iteration Number {i} ======== ")
+        for i in range(20):
+            print(f"====== Mutation List {mutation_names} | Iteration Number {i} ======== ")
 
             de = DEModel(
                 start=binary_max_cut_init,
-                mutation=mc_de_rand_one,
+                mutation_list=mutation_list,
                 crossover=mc_binomial_crossover,
                 selection=max_cut_hamming_selection,
                 stop_condition=limit_generations,
@@ -46,14 +47,14 @@ def main_max_cut_evolutionary(graph):
                 adj_matrix=adj_matrix,
                 adj_list=adj_list,
                 cross_rate=cross_rate,
-                diversity_rate=diversity_rate
+                diversity_rate=0.0
             )
 
             de.evolutionary_process()
-            #print(f"Best Fitness History {de.fitness_history}")
-            #print(f"Median Fitness History {de.fitness_avg_history}")
-            #print(f"Hamming Distance History {de.diversity_history}")
-            #print(f"Median Hamming Distance History {de.diversity_avg_history}")
+            print(f"Best Fitness History {de.fitness_history}")
+            print(f"Median Fitness History {de.fitness_avg_history}")
+            print(f"Hamming Distance History {de.diversity_history}")
+            print(f"Median Hamming Distance History {de.diversity_avg_history}")
             best_ind = de.best_individual
             R = [i for i in range(len(best_ind.integer_gene)) if best_ind.integer_gene[i] == 0]
             L = [i for i in range(len(best_ind.integer_gene)) if best_ind.integer_gene[i] == 1]
@@ -65,7 +66,7 @@ def main_max_cut_evolutionary(graph):
 
         median_fitness = np.median(np.array(fitness_list), axis=0)
         print(f"====== Median Fitness: {median_fitness} ======== ")
-        dic_results[diversity_rate] = fitness_list
+        dic_results[mutation_names] = fitness_list
 
     df = pd.DataFrame(data=dic_results)
     return df
@@ -86,7 +87,7 @@ def main_evolutionary(graph):
 
     de = DEModel(
                 start=random_novel_trevisan_init,
-                mutation=de_best_two_trevisan,
+                mutation_list=de_best_two_trevisan,
                 crossover=exponential_crossover,
                 selection=pair_wise_selection,
                 stop_condition=limit_generations,
@@ -122,4 +123,4 @@ if __name__ == '__main__':
     file = "g05_100_0.csv"
     graph = create_graph(path, file)
     df = main_max_cut_evolutionary(graph)
-    df.to_csv("../statistics/csv_files/hamming_icaro.csv")
+    df.to_csv("../statistics/csv_files/hamming_norm_icaro_150_gen_80_pop.csv")

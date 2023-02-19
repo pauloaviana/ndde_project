@@ -24,7 +24,7 @@ def main_max_cut_evolutionary(adj_matrix,adj_list,**kwargs):
 
         de = DEModel(
             start=binary_max_cut_init,
-            mutation=mc_de_rand_one,
+            mutation_list=mc_de_rand_one,
             crossover=mc_binomial_crossover,
             selection=max_cut_selection,
             stop_condition=limit_generations,

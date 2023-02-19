@@ -5,13 +5,13 @@ from models.population import NovelTrevisanIndividual, TrevisanIndividual, MaxCu
 import numpy as np
 
 
-def binary_max_cut_init(population_size, problem_size, adj_matrix, adj_list):
+def binary_max_cut_init(population_size, problem_size, adj_matrix, adj_list, mutation_function_list):
 
     population = []
     for i in range(population_size):
         real_gene = np.random.uniform(0, 1, problem_size)
 
-        individual = MaxCutIndividual(real_gene)
+        individual = MaxCutIndividual(real_gene, mutation_function_list)
         individual.fitness = max_cut_fitness(individual.integer_gene, adj_matrix, adj_list)
         population.append(individual)
 
